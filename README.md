@@ -22,9 +22,9 @@ Puis ouvrir http://localhost:4173.
 | `admin.html`, `admin.js`, `admin.css` | Page admin : connexion, ajout et modification des projets |
 | `site-loader.js` | Charge les projets publiés depuis Supabase, puis lance le site |
 | `supabase-config.js` | Adresse et clé publique de Supabase |
-| `supabase/schema.sql` | Tables, photos et règles de sécurité de la base |
+| `supabase/schema.sql`, `supabase/articles.sql` | Tables, photos et règles de sécurité de la base |
 | `projects.js` | Catégories et projets de secours, si la base est vide ou injoignable |
-| `articles.js` | Données des articles |
+| `articles.js` | Articles d'exemple, si la base n'en contient aucun de publié |
 | `site.js` | Menu, recherche, animations et mise en page automatique |
 | `styles.css` | Styles de toutes les pages |
 | `images/projects/` | Photos des projets, optimisées pour le web |
@@ -33,6 +33,5 @@ Puis ouvrir http://localhost:4173.
 
 - Noms et textes des projets
 - Textes et images de l'accueil et de la page Studio
-- Vrais articles de HUEBERworld
 - Envoi du formulaire de contact (il n'envoie rien pour l'instant)
-- Gestion des articles et de l'ordre des projets dans l'admin
+- Choix de l'ordre des projets dans l'admin

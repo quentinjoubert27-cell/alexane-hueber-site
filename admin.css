@@ -19,6 +19,9 @@ ul { list-style: none; padding: 0; }
 .ad-logo { color: inherit; text-decoration: none; }
 .ad-main { max-width: 960px; margin: 0 auto; padding: 40px 24px 96px; }
 h1 { font-size: 24px; }
+.ad-tabs { display: flex; gap: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+.ad-tab { padding: 0 0 8px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--grey); font: inherit; cursor: pointer; }
+.ad-tab[aria-current="true"] { border-bottom-color: var(--ink); color: var(--ink); }
 .ad-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 
 .ad-button { min-height: 44px; padding: 0 20px; border: 1px solid var(--ink); background: var(--ink); color: var(--cream); font: inherit; cursor: pointer; }

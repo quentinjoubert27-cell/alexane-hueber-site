@@ -35,8 +35,12 @@
   </section>
 
   <section id="view-list" hidden>
+    <nav class="ad-tabs" aria-label="Contenus">
+      <button class="ad-tab" type="button" data-tab="project">Projets</button>
+      <button class="ad-tab" type="button" data-tab="article">Articles</button>
+    </nav>
     <div class="ad-head">
-      <h1>Projets</h1>
+      <h1 id="list-title">Projets</h1>
       <button class="ad-button" id="new-project" type="button">Nouveau projet</button>
     </div>
     <div class="ad-import" id="import-box" hidden>
@@ -44,7 +48,7 @@
       <button class="ad-button ad-button--light" id="import-projects" type="button">Importer ces projets</button>
     </div>
     <ul class="ad-list" id="project-list"></ul>
-    <p class="ad-empty" id="list-empty" hidden>Aucun projet pour l'instant.</p>
+    <p class="ad-empty" id="list-empty" hidden></p>
   </section>
 
   <section id="view-editor" hidden>
@@ -56,13 +60,24 @@
     <form class="ad-form" id="project-form" novalidate>
       <fieldset>
         <legend>Fiche</legend>
-        <label>Titre *<input type="text" id="field-title" maxlength="40" required><small class="ad-count" data-count-for="field-title"></small></label>
-        <label>Catégorie *<select id="field-category" required></select></label>
-        <div class="ad-row">
+        <label>Titre *<input type="text" id="field-title" required><small class="ad-count" data-count-for="field-title"></small></label>
+        <label data-kind="project">Catégorie *<select id="field-category" required></select></label>
+        <div class="ad-row" data-kind="project">
           <label>Lieu<input type="text" id="field-location"></label>
           <label>Année<input type="text" id="field-year" inputmode="numeric"></label>
           <label>Surface<input type="text" id="field-area" placeholder="250 m²"></label>
         </div>
+        <div class="ad-row" data-kind="article">
+          <label>Date *<input type="date" id="field-date"></label>
+          <label>Rubrique *<input type="text" id="field-tag" list="tag-suggestions" placeholder="Inspiration"></label>
+          <datalist id="tag-suggestions">
+            <option value="Inspiration"></option>
+            <option value="Behind the scenes"></option>
+            <option value="Materials"></option>
+            <option value="Travel"></option>
+          </datalist>
+        </div>
+        <label data-kind="article">Résumé *<textarea id="field-excerpt" rows="3"></textarea><small class="ad-count" data-count-for="field-excerpt"></small></label>
       </fieldset>
 
       <fieldset>
@@ -77,7 +92,7 @@
 
       <fieldset>
         <legend>Textes</legend>
-        <label>Introduction<textarea id="field-intro" rows="5"></textarea><small class="ad-count" data-count-for="field-intro"></small></label>
+        <label><span id="intro-label">Introduction</span><textarea id="field-intro" rows="5"></textarea><small class="ad-count" data-count-for="field-intro"></small></label>
         <div id="paragraph-list"></div>
         <button class="ad-button ad-button--light" id="add-paragraph" type="button">Ajouter un paragraphe</button>
       </fieldset>
@@ -88,7 +103,7 @@
         <button class="ad-button" id="publish" type="button">Publier</button>
         <button class="ad-button ad-button--light" id="save-draft" type="button">Enregistrer en brouillon</button>
         <a class="ad-link" id="view-project" target="_blank" rel="noopener" hidden>Voir sur le site</a>
-        <button class="ad-link ad-link--danger" id="delete-project" type="button" hidden>Supprimer ce projet</button>
+        <button class="ad-link ad-link--danger" id="delete-project" type="button" hidden>Supprimer</button>
       </div>
     </form>
   </section>

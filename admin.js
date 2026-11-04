@@ -11,6 +11,17 @@ const PARAGRAPH_MIN = 150;
 const PARAGRAPH_MAX = 600;
 const PARAGRAPHS_MAX = 6;
 const PHOTOS_PER_PARAGRAPH = 4;
+const EXCERPT_MIN = 40;
+const EXCERPT_MAX = 240;
+const ARTICLE_INTRO_MAX = 600;
+const ARTICLE_PARAGRAPH_MAX = 2000;
+const ARTICLE_PARAGRAPHS_MAX = 30;
+
+// Ce qui diffère entre un projet et un article ; le reste de l'admin est commun
+const KINDS = {
+  project: { table: 'projects', listTitle: 'Projets', newLabel: 'Nouveau projet', editLabel: 'Modifier le projet', empty: "Aucun projet pour l'instant.", fallbackSlug: 'projet', storagePrefix: '', titleMax: TITLE_MAX, introLabel: 'Introduction', introMin: INTRO_MIN, introMax: INTRO_MAX, paragraphMin: PARAGRAPH_MIN, paragraphMax: PARAGRAPH_MAX, viewHref: slug => `project.html?p=${encodeURIComponent(slug)}` },
+  article: { table: 'articles', listTitle: 'Articles', newLabel: 'Nouvel article', editLabel: "Modifier l'article", empty: "Aucun article pour l'instant. Tant qu'il n'y en a aucun de publié, HUEBERworld affiche les articles d'exemple.", fallbackSlug: 'article', storagePrefix: 'articles/', titleMax: 80, introLabel: 'Introduction *', introMin: 0, introMax: ARTICLE_INTRO_MAX, paragraphMin: 0, paragraphMax: ARTICLE_PARAGRAPH_MAX, viewHref: slug => `article.html?a=${encodeURIComponent(slug)}` }
+};
 
 // Réglages des photos envoyées, les mêmes que pour les projets déjà sur le site
 const PHOTO_MAX_SIDE = 2600;
@@ -19,7 +30,9 @@ const PHOTO_QUALITY = .8;
 const $ = id => document.getElementById(id);
 const views = ['view-login', 'view-denied', 'view-list', 'view-editor'];
 
-let projects = [];
+let kind = 'project';
+const config = () => KINDS[kind];
+let projects = [];    // projets ou articles de l'onglet ouvert
 let editing = null;   // { id, slug, published, position, isNew }
 let photos = [];      // { src?, blob?, preview, alt, width, height }
 let removedSources = [];
@@ -76,15 +89,33 @@ const categoryLabel = id => window.CATEGORIES.find(category => category.id === i
 
 const showList = async () => {
   isDirty = false;
-  const { data, error } = await client.from('projects').select('*').order('position').order('created_at');
-  if (error) return showMessage(`Impossible de charger les projets : ${error.message}`, true);
+  const query = client.from(config().table).select('*');
+  const { data, error } = await (kind === 'project' ? query.order('position').order('created_at') : query.order('date', { ascending: false }));
+  document.querySelectorAll('.ad-tab').forEach(tab => tab.setAttribute('aria-current', tab.dataset.tab === kind));
+  $('list-title').textContent = config().listTitle;
+  $('new-project').textContent = config().newLabel;
+  $('list-empty').textContent = config().empty;
+  showView('view-list');
+  if (error) {
+    $('project-list').replaceChildren();
+    $('import-box').hidden = true;
+    $('list-empty').hidden = true;
+    return showMessage(`Impossible de charger cette liste : ${error.message}`, true);
+  }
   projects = data;
   const list = $('project-list');
   list.replaceChildren(...projects.map(projectRow));
   $('list-empty').hidden = projects.length > 0;
-  $('import-box').hidden = projects.length > 0 || !STATIC_PROJECTS?.length;
-  showView('view-list');
+  $('import-box').hidden = kind !== 'project' || projects.length > 0 || !STATIC_PROJECTS?.length;
 };
+
+document.querySelectorAll('.ad-tab').forEach(tab => tab.addEventListener('click', async () => {
+  kind = tab.dataset.tab;
+  showMessage('');
+  await showList();
+}));
+
+const formatDate = date => new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
 
 const projectRow = project => {
   const row = document.createElement('li');
@@ -97,7 +128,10 @@ const projectRow = project => {
   title.textContent = project.title;
   const meta = document.createElement('div');
   meta.className = 'ad-list__meta';
-  meta.textContent = `${categoryLabel(project.category)} · ${project.images.length} photo${project.images.length > 1 ? 's' : ''}`;
+  const photoCount = `${project.images.length} photo${project.images.length > 1 ? 's' : ''}`;
+  meta.textContent = kind === 'project'
+    ? `${categoryLabel(project.category)} · ${photoCount}`
+    : `${formatDate(project.date)}${project.tag ? ` · ${project.tag}` : ''} · ${photoCount}`;
   text.append(title, meta);
   const status = document.createElement('span');
   status.className = `ad-status${project.published ? ' is-published' : ''}`;
@@ -140,8 +174,13 @@ const openEditor = project => {
   $('form-errors').hidden = true;
   editing = project
     ? { id: project.id, slug: project.slug, published: project.published, position: project.position, isNew: false }
-    : { id: crypto.randomUUID(), slug: null, published: false, position: Math.max(0, ...projects.map(item => item.position)) + 1, isNew: true };
-  $('editor-title').textContent = project ? 'Modifier le projet' : 'Nouveau projet';
+    : { id: crypto.randomUUID(), slug: null, published: false, position: Math.max(0, ...projects.map(item => item.position ?? 0)) + 1, isNew: true };
+  $('editor-title').textContent = project ? config().editLabel : config().newLabel;
+  document.querySelectorAll('[data-kind]').forEach(element => { element.hidden = element.dataset.kind !== kind; });
+  $('intro-label').textContent = config().introLabel;
+  $('field-date').value = project?.date ?? new Date().toISOString().slice(0, 10);
+  $('field-tag').value = project?.tag ?? '';
+  $('field-excerpt').value = project?.excerpt ?? '';
   $('field-title').value = project?.title ?? '';
   $('field-category').value = project?.category ?? window.CATEGORIES[0].id;
   $('field-location').value = project?.location ?? '';
@@ -159,7 +198,7 @@ const openEditor = project => {
   $('save-draft').textContent = project?.published ? 'Repasser en brouillon' : 'Enregistrer en brouillon';
   $('delete-project').hidden = !project;
   $('view-project').hidden = !project?.published;
-  if (project?.published) $('view-project').href = `project.html?p=${encodeURIComponent(project.slug)}`;
+  if (project?.published) $('view-project').href = config().viewHref(project.slug);
   isDirty = false;
   showView('view-editor');
 };
@@ -186,10 +225,10 @@ const addParagraph = (value = '') => {
   area.setAttribute('aria-label', 'Paragraphe');
   const count = document.createElement('small');
   count.className = 'ad-count';
-  area.addEventListener('input', () => updateCount(area, count, PARAGRAPH_MIN, PARAGRAPH_MAX));
+  area.addEventListener('input', () => updateCount(area, count, config().paragraphMin, config().paragraphMax));
   box.append(head, area, count);
   $('paragraph-list').append(box);
-  updateCount(area, count, PARAGRAPH_MIN, PARAGRAPH_MAX);
+  updateCount(area, count, config().paragraphMin, config().paragraphMax);
   numberParagraphs();
 };
 
@@ -213,8 +252,9 @@ const updateCount = (field, counter, min, max) => {
 };
 
 const updateCounters = () => {
-  updateCount($('field-title'), document.querySelector('[data-count-for="field-title"]'), 0, TITLE_MAX);
-  updateCount($('field-intro'), document.querySelector('[data-count-for="field-intro"]'), INTRO_MIN, INTRO_MAX);
+  updateCount($('field-title'), document.querySelector('[data-count-for="field-title"]'), 0, config().titleMax);
+  updateCount($('field-intro'), document.querySelector('[data-count-for="field-intro"]'), config().introMin, config().introMax);
+  updateCount($('field-excerpt'), document.querySelector('[data-count-for="field-excerpt"]'), EXCERPT_MIN, EXCERPT_MAX);
 };
 
 $('project-form').addEventListener('input', () => {
@@ -341,8 +381,9 @@ const collectErrors = isPublishing => {
   const errors = [];
   const title = $('field-title').value.trim();
   if (!title) errors.push('Ajoute un titre.');
-  if (title.length > TITLE_MAX) errors.push(`Le titre doit faire ${TITLE_MAX} caractères au maximum.`);
+  if (title.length > config().titleMax) errors.push(`Le titre doit faire ${config().titleMax} caractères au maximum.`);
   if (!isPublishing) return errors;
+  if (kind === 'article') return [...errors, ...articleErrors()];
 
   if (photos.length < MIN_PHOTOS) errors.push(`Ajoute au moins ${MIN_PHOTOS} photos (${photos.length} pour l'instant).`);
   const withoutAlt = photos.filter(photo => !photo.alt.trim()).length;
@@ -360,6 +401,27 @@ const collectErrors = isPublishing => {
   return errors;
 };
 
+const articleErrors = () => {
+  const errors = [];
+  if (!$('field-date').value) errors.push('Choisis une date.');
+  if (!$('field-tag').value.trim()) errors.push('Indique une rubrique.');
+  const excerpt = $('field-excerpt').value.trim().length;
+  if (excerpt < EXCERPT_MIN || excerpt > EXCERPT_MAX) errors.push(`Le résumé doit faire de ${EXCERPT_MIN} à ${EXCERPT_MAX} caractères.`);
+  if (!photos.length) errors.push('Ajoute au moins une photo.');
+  const withoutAlt = photos.filter(photo => !photo.alt.trim()).length;
+  if (withoutAlt) errors.push(`Décris chaque photo : ${withoutAlt} description${withoutAlt > 1 ? 's manquent' : ' manque'}.`);
+  const intro = $('field-intro').value.trim().length;
+  if (!intro) errors.push('Ajoute une introduction.');
+  if (intro > ARTICLE_INTRO_MAX) errors.push(`L'introduction doit faire ${ARTICLE_INTRO_MAX} caractères au maximum.`);
+  const paragraphs = paragraphValues();
+  if (!paragraphs.length) errors.push('Ajoute au moins un paragraphe.');
+  if (paragraphs.length > ARTICLE_PARAGRAPHS_MAX) errors.push(`${ARTICLE_PARAGRAPHS_MAX} paragraphes au maximum.`);
+  paragraphs.forEach((text, index) => {
+    if (text.length > ARTICLE_PARAGRAPH_MAX) errors.push(`Le paragraphe ${index + 1} doit faire ${ARTICLE_PARAGRAPH_MAX} caractères au maximum.`);
+  });
+  return errors;
+};
+
 const showErrors = errors => {
   const box = $('form-errors');
   box.replaceChildren(...errors.map(error => {
@@ -372,11 +434,11 @@ const showErrors = errors => {
 };
 
 // Enregistrement
-const slugify = title => title.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'projet';
+const slugify = title => title.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || config().fallbackSlug;
 
 const availableSlug = async title => {
   const base = slugify(title);
-  const { data, error } = await client.from('projects').select('slug').like('slug', `${base}%`);
+  const { data, error } = await client.from(config().table).select('slug').like('slug', `${base}%`);
   if (error) throw error;
   const taken = new Set(data.map(row => row.slug));
   if (!taken.has(base)) return base;
@@ -398,7 +460,7 @@ const uploadNewPhotos = async () => {
     const pending = photos.filter(photo => photo.blob);
     for (const [index, photo] of pending.entries()) {
       showMessage(`Envoi des photos : ${index + 1} sur ${pending.length}…`);
-      const path = `${editing.id}/${crypto.randomUUID()}.jpg`;
+      const path = `${config().storagePrefix}${editing.id}/${crypto.randomUUID()}.jpg`;
       const { error } = await client.storage.from(BUCKET).upload(path, photo.blob, { contentType: 'image/jpeg', cacheControl: '31536000' });
       if (error) throw error;
       uploaded.push(path);
@@ -428,20 +490,20 @@ const saveProject = async publish => {
   try {
     uploaded = await uploadNewPhotos();
     const intro = $('field-intro').value.trim();
+    const fields = kind === 'project'
+      ? { category: $('field-category').value, location: $('field-location').value.trim(), year: $('field-year').value.trim(), area: $('field-area').value.trim() }
+      : { date: $('field-date').value || new Date().toISOString().slice(0, 10), tag: $('field-tag').value.trim(), excerpt: $('field-excerpt').value.trim() };
     const row = {
       title: $('field-title').value.trim(),
-      category: $('field-category').value,
-      location: $('field-location').value.trim(),
-      year: $('field-year').value.trim(),
-      area: $('field-area').value.trim(),
+      ...fields,
       images: photos.map(photo => ({ src: photo.uploadedSrc ?? photo.src, alt: photo.alt.trim(), width: photo.width, height: photo.height })),
       texts: [...(intro ? [intro] : []), ...paragraphValues()],
       published: publish
     };
     showMessage('Enregistrement…');
     const { error } = editing.isNew
-      ? await client.from('projects').insert({ ...row, id: editing.id, slug: await availableSlug(row.title), position: editing.position })
-      : await client.from('projects').update(row).eq('id', editing.id);
+      ? await client.from(config().table).insert({ ...row, id: editing.id, slug: await availableSlug(row.title), ...(kind === 'project' ? { position: editing.position } : {}) })
+      : await client.from(config().table).update(row).eq('id', editing.id);
     if (error) throw error;
     // Le projet est enregistré : on peut retirer les fichiers qu'il n'utilise plus
     await removeFiles(removedSources);
@@ -466,7 +528,7 @@ $('delete-project').addEventListener('click', async () => {
   const title = $('field-title').value.trim();
   if (!confirm(`Supprimer définitivement « ${title} » et ses photos ? Cette action est irréversible.`)) return;
   setBusy(true);
-  const { error } = await client.from('projects').delete().eq('id', editing.id);
+  const { error } = await client.from(config().table).delete().eq('id', editing.id);
   if (error) {
     setBusy(false);
     return showMessage(`La suppression a échoué : ${error.message}`, true);
