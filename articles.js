@@ -11,8 +11,8 @@
 //   texts: ['Chapeau…', 'Paragraphe…']   le premier s'affiche en grand sous le titre
 // }
 
-// Articles provisoires, à remplacer par les vrais. Sans « src », une image affiche un aplat de couleur.
-const articleColors = ['ph-right', 'ph-camp', 'ph-proj', 'ph-left', 'ph-hero'];
+// Articles provisoires, à remplacer par les vrais. En attendant, ils réutilisent les photos des projets.
+const articlePhotos = window.PROJECTS.flatMap(project => project.images);
 
 const placeholderArticle = (number, date, tag) => ({
   slug: `article-${number}`,
@@ -20,10 +20,7 @@ const placeholderArticle = (number, date, tag) => ({
   date,
   tag,
   excerpt: 'Placeholder summary of the article, in one or two sentences, to be replaced by the real text.',
-  images: Array.from({ length: 6 }, (_, i) => ({
-    alt: `Article ${number}, image ${i + 1}`,
-    ph: articleColors[(i + Number(number)) % articleColors.length]
-  })),
+  images: Array.from({ length: 8 }, (_, i) => articlePhotos[(Number(number) * 4 + i) % articlePhotos.length]),
   texts: [
     'Placeholder introduction of the article, to be replaced by the real text.',
     'Placeholder paragraph telling the first part of the story: where the idea comes from and why it matters.',
