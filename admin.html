@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Alexane Hueber</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<header class="ad-bar">
+  <a class="ad-logo" href="index.html">Alexane Hueber</a>
+  <button class="ad-link" id="logout" type="button" hidden>Se déconnecter</button>
+</header>
+
+<main class="ad-main">
+  <p class="ad-message" id="message" role="status" hidden></p>
+
+  <section id="view-login" hidden>
+    <h1>Connexion</h1>
+    <form class="ad-form ad-narrow" id="login-form">
+      <label>E-mail<input type="email" id="login-email" autocomplete="username" required></label>
+      <label>Mot de passe<input type="password" id="login-password" autocomplete="current-password" required></label>
+      <button class="ad-button" type="submit">Se connecter</button>
+    </form>
+  </section>
+
+  <section id="view-denied" hidden>
+    <h1>Accès refusé</h1>
+    <p>Ce compte n'est pas autorisé à gérer les projets.</p>
+  </section>
+
+  <section id="view-list" hidden>
+    <div class="ad-head">
+      <h1>Projets</h1>
+      <button class="ad-button" id="new-project" type="button">Nouveau projet</button>
+    </div>
+    <div class="ad-import" id="import-box" hidden>
+      <p>La base est vide. Le site affiche encore les projets enregistrés dans son code.</p>
+      <button class="ad-button ad-button--light" id="import-projects" type="button">Importer ces projets</button>
+    </div>
+    <ul class="ad-list" id="project-list"></ul>
+    <p class="ad-empty" id="list-empty" hidden>Aucun projet pour l'instant.</p>
+  </section>
+
+  <section id="view-editor" hidden>
+    <div class="ad-head">
+      <h1 id="editor-title">Nouveau projet</h1>
+      <button class="ad-link" id="back" type="button">Retour à la liste</button>
+    </div>
+
+    <form class="ad-form" id="project-form" novalidate>
+      <fieldset>
+        <legend>Fiche</legend>
+        <label>Titre *<input type="text" id="field-title" maxlength="40" required><small class="ad-count" data-count-for="field-title"></small></label>
+        <label>Catégorie *<select id="field-category" required></select></label>
+        <div class="ad-row">
+          <label>Lieu<input type="text" id="field-location"></label>
+          <label>Année<input type="text" id="field-year" inputmode="numeric"></label>
+          <label>Surface<input type="text" id="field-area" placeholder="250 m²"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Photos</legend>
+        <p class="ad-help">La première photo sert de grande image en haut de la page. Elles sont automatiquement allégées avant l'envoi. Formats acceptés : JPEG, PNG et WebP.</p>
+        <label class="ad-drop" id="drop-zone">
+          <span>Choisir des photos ou les déposer ici</span>
+          <input type="file" id="field-photos" accept="image/jpeg,image/png,image/webp" multiple>
+        </label>
+        <ul class="ad-photos" id="photo-list"></ul>
+      </fieldset>
+
+      <fieldset>
+        <legend>Textes</legend>
+        <label>Introduction<textarea id="field-intro" rows="5"></textarea><small class="ad-count" data-count-for="field-intro"></small></label>
+        <div id="paragraph-list"></div>
+        <button class="ad-button ad-button--light" id="add-paragraph" type="button">Ajouter un paragraphe</button>
+      </fieldset>
+
+      <ul class="ad-errors" id="form-errors" role="alert" hidden></ul>
+
+      <div class="ad-actions">
+        <button class="ad-button" id="publish" type="button">Publier</button>
+        <button class="ad-button ad-button--light" id="save-draft" type="button">Enregistrer en brouillon</button>
+        <a class="ad-link" id="view-project" target="_blank" rel="noopener" hidden>Voir sur le site</a>
+        <button class="ad-link ad-link--danger" id="delete-project" type="button" hidden>Supprimer ce projet</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
+<script src="projects.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
