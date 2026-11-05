@@ -88,24 +88,34 @@ $('logout').addEventListener('click', async () => {
 const setActiveTab = active => document.querySelectorAll('.ad-tab').forEach(tab => tab.setAttribute('aria-current', tab.dataset.tab === active));
 
 // Liste des projets
+// Les deux grandes images du bas de l'accueil : chacune affiche le projet choisi avec ces boutons
+const HOME_SLOTS = [
+  { key: 'home.panel1_project', label: 'Accueil gauche', place: 'à gauche' },
+  { key: 'home.panel2_project', label: 'Accueil droite', place: 'à droite' }
+];
+let homeChoices = {};
+
 const categoryLabel = id => window.CATEGORIES.find(category => category.id === id)?.label ?? id;
 
 const showList = async () => {
   isDirty = false;
   const query = client.from(config().table).select('*');
   const { data, error } = await (kind === 'project' ? query.order('position').order('created_at') : query.order('date', { ascending: false }));
+  const choices = kind === 'project' ? await client.from('site_texts').select('key,value').in('key', HOME_SLOTS.map(slot => slot.key)) : { data: [] };
   setActiveTab(kind);
   $('list-title').textContent = config().listTitle;
   $('new-project').textContent = config().newLabel;
   $('list-empty').textContent = config().empty;
   showView('view-list');
-  if (error) {
+  $('home-help').hidden = kind !== 'project';
+  if (error || choices.error) {
     $('project-list').replaceChildren();
     $('import-box').hidden = true;
     $('list-empty').hidden = true;
-    return showMessage(`Impossible de charger cette liste : ${error.message}`, true);
+    return showMessage(`Impossible de charger cette liste : ${(error || choices.error).message}`, true);
   }
   projects = data;
+  homeChoices = Object.fromEntries(choices.data.map(({ key, value }) => [key, value]));
   const list = $('project-list');
   list.replaceChildren(...projects.map(projectRow));
   $('list-empty').hidden = projects.length > 0;
@@ -123,6 +133,38 @@ document.querySelectorAll('.ad-tab').forEach(tab => tab.addEventListener('click'
 }));
 
 const formatDate = date => new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
+
+// Un projet n'occupe qu'une seule place : le choisir d'un côté le retire de l'autre
+const setHomeSlot = async (slot, project) => {
+  if (isBusy) return;
+  const isChosen = homeChoices[slot.key] === project.slug;
+  const other = HOME_SLOTS.find(item => item !== slot && homeChoices[item.key] === project.slug);
+  setBusy(true);
+  const saved = isChosen
+    ? await client.from('site_texts').delete().eq('key', slot.key)
+    : await client.from('site_texts').upsert({ key: slot.key, value: project.slug });
+  const moved = !saved.error && other ? await client.from('site_texts').delete().eq('key', other.key) : {};
+  setBusy(false);
+  const error = saved.error || moved.error;
+  if (error) return showMessage(`L'enregistrement a échoué : ${error.message}`, true);
+  await showList();
+  showMessage(isChosen ? `« ${project.title} » n'est plus choisi pour l'accueil.` : `« ${project.title} » s'affiche maintenant ${slot.place} en bas de l'accueil.`);
+};
+
+const homeButtons = project => {
+  const group = document.createElement('div');
+  group.className = 'ad-list__home';
+  HOME_SLOTS.forEach(slot => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ad-home';
+    button.textContent = slot.label;
+    button.setAttribute('aria-pressed', homeChoices[slot.key] === project.slug);
+    button.addEventListener('click', () => setHomeSlot(slot, project));
+    group.append(button);
+  });
+  return group;
+};
 
 const projectRow = project => {
   const row = document.createElement('li');
@@ -148,7 +190,7 @@ const projectRow = project => {
   edit.className = 'ad-link';
   edit.textContent = 'Modifier';
   edit.addEventListener('click', () => openEditor(project));
-  row.append(image, text, status, edit);
+  row.append(image, text, ...(kind === 'project' && project.published ? [homeButtons(project)] : []), status, edit);
   return row;
 };
 
@@ -554,9 +596,7 @@ const textGroups = () => [
     { key: 'home.tile1_title', label: 'Vignette 1 : titre' },
     { key: 'home.tile1_text', label: 'Vignette 1 : texte' },
     { key: 'home.tile2_title', label: 'Vignette 2 : titre' },
-    { key: 'home.tile2_text', label: 'Vignette 2 : texte' },
-    { key: 'home.panel1_project', label: 'Grand panneau 1 : projet', options: publishedProjects },
-    { key: 'home.panel2_project', label: 'Grand panneau 2 : projet', options: publishedProjects }
+    { key: 'home.tile2_text', label: 'Vignette 2 : texte' }
   ] },
   { title: 'Studio', fields: [
     { key: 'studio.about', label: 'Présentation', rows: 8, help: 'Laisse une ligne vide entre deux paragraphes.' },
@@ -578,7 +618,6 @@ const textGroups = () => [
 ];
 
 let savedTexts = {};
-let publishedProjects = [];
 
 const renderTextsForm = () => {
   $('texts-form').replaceChildren(...textGroups().map(group => {
@@ -589,11 +628,8 @@ const renderTextsForm = () => {
     group.fields.forEach(field => {
       const label = document.createElement('label');
       label.textContent = field.label;
-      const input = document.createElement(field.options ? 'select' : field.rows ? 'textarea' : 'input');
-      if (field.options) {
-        input.add(new Option('Automatique (premiers projets publiés)', ''));
-        field.options.forEach(project => input.add(new Option(project.title, project.slug)));
-      } else if (field.rows) {
+      const input = document.createElement(field.rows ? 'textarea' : 'input');
+      if (field.rows) {
         input.rows = field.rows;
       } else {
         input.type = 'text';
@@ -623,9 +659,6 @@ const showTexts = async () => {
     return showMessage(`Impossible de charger les textes : ${error.message}`, true);
   }
   savedTexts = Object.fromEntries(data.map(({ key, value }) => [key, value]));
-  const { data: published, error: projectsError } = await client.from('projects').select('slug,title').eq('published', true).order('position').order('created_at');
-  if (projectsError) return showMessage(`Impossible de charger les projets : ${projectsError.message}`, true);
-  publishedProjects = published;
   $('save-texts').hidden = false;
   renderTextsForm();
   isDirty = false;
