@@ -107,7 +107,6 @@ document.querySelector('.site-footer').innerHTML = `
       <ul>
         <li><a href="studio.html">About</a></li>
         <li><a href="#">Projects</a></li>
-        <li><a href="#">Press</a></li>
         <li><a href="world.html">HUEBERworld</a></li>
       </ul>
     </div>
