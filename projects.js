@@ -1,4 +1,4 @@
-// Catégories du site, et projets de secours : le site lit ses projets dans Supabase (voir site-loader.js) et n'utilise cette liste
+// Catégories par défaut (l'admin peut les renommer et en ajouter), et projets de secours : le site lit ses projets dans Supabase (voir site-loader.js) et n'utilise cette liste
 // que si la base est vide ou injoignable. Pour ajouter un projet, passer par admin.html.
 // Un projet = une fiche, des images et des textes. La mise en page se fait toute seule (voir LAYOUT dans site.js).
 //

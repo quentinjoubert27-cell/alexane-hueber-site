@@ -22,7 +22,7 @@ create table public.projects (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   title text not null check (char_length(title) between 1 and 40),
-  category text not null check (category in ('residential', 'hotels', 'restaurant', 'retail')),
+  category text not null check (category ~ '^[a-z0-9_]+$'),
   location text not null default '',
   year text not null default '',
   area text not null default '',

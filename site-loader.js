@@ -32,7 +32,10 @@ const applyTexts = texts => {
   });
   document.querySelectorAll('[data-text]').forEach(element => {
     const value = texts[element.dataset.text];
-    if (value) element.textContent = value;
+    if (value) {
+      element.textContent = value;
+      element.classList.remove('lg-todo');
+    }
   });
   document.querySelectorAll('[data-text-paragraphs]').forEach(element => {
     const value = texts[element.dataset.textParagraphs];
@@ -61,6 +64,7 @@ const startSite = async () => {
   ]);
   if (projects.length) window.PROJECTS = projects;
   window.SITE_TEXTS = Object.fromEntries(texts.map(({ key, value }) => [key, value]));
+  if (window.SITE_TEXTS['site.categories']) window.CATEGORIES = JSON.parse(window.SITE_TEXTS['site.categories']);
   applyTexts(window.SITE_TEXTS);
   document.documentElement.classList.add('texts-ready');
   await loadScript('articles.js');

@@ -28,7 +28,7 @@ const PHOTO_MAX_SIDE = 2600;
 const PHOTO_QUALITY = .8;
 
 const $ = id => document.getElementById(id);
-const views = ['view-login', 'view-denied', 'view-list', 'view-texts', 'view-images', 'view-editor'];
+const views = ['view-login', 'view-denied', 'view-list', 'view-texts', 'view-images', 'view-categories', 'view-editor'];
 
 let kind = 'project';
 const config = () => KINDS[kind];
@@ -41,7 +41,7 @@ let isBusy = false;
 
 const showView = id => {
   views.forEach(view => { $(view).hidden = view !== id; });
-  $('tabs').hidden = !['view-list', 'view-texts', 'view-images'].includes(id);
+  $('tabs').hidden = !['view-list', 'view-texts', 'view-images', 'view-categories'].includes(id);
   window.scrollTo(0, 0);
 };
 
@@ -65,6 +65,7 @@ const refreshSession = async () => {
   const { data: isAdmin, error } = await client.rpc('is_admin');
   if (error) return showMessage(`Impossible de vérifier ce compte : ${error.message}`, true);
   if (!isAdmin) return showView('view-denied');
+  await loadCategories();
   await showList();
 };
 
@@ -126,7 +127,8 @@ document.querySelectorAll('.ad-tab').forEach(tab => tab.addEventListener('click'
   if (isDirty && !confirm('Les modifications non enregistrées seront perdues. Changer d\'onglet ?')) return;
   isDirty = false;
   showMessage('');
-  if (tab.dataset.tab === 'texts') return showTexts();
+  if (tab.dataset.tab in TEXT_TABS) return showTexts(tab.dataset.tab);
+  if (tab.dataset.tab === 'categories') return showCategories();
   if (tab.dataset.tab === 'images') return showImages();
   kind = tab.dataset.tab;
   await showList();
@@ -214,9 +216,8 @@ $('import-projects').addEventListener('click', async () => {
 });
 
 // Formulaire
-window.CATEGORIES.forEach(category => {
-  $('field-category').add(new Option(category.label, category.id));
-});
+const fillCategories = () => $('field-category').replaceChildren(...window.CATEGORIES.map(category => new Option(category.label, category.id)));
+fillCategories();
 
 const openEditor = project => {
   showMessage('');
@@ -589,7 +590,7 @@ $('delete-project').addEventListener('click', async () => {
   showMessage(`« ${title} » est supprimé.`);
 });
 
-// Onglet Textes : les textes des pages qui ne sont ni des projets ni des articles
+// Onglets Textes et Légal : les textes des pages qui ne sont ni des projets ni des articles
 const textGroups = () => [
   { title: 'Accueil', fields: [
     { key: 'home.hero_title', label: 'Titre principal' },
@@ -617,10 +618,40 @@ const textGroups = () => [
   ] }
 ];
 
+// Une information reprise sur plusieurs pages légales n'a qu'un seul champ
+const legalGroups = () => [
+  { title: 'Entreprise', fields: [
+    { key: 'legal.company', label: "Nom de l'entreprise ou nom complet" },
+    { key: 'legal.legal_form', label: 'Forme juridique et capital', help: 'Par exemple : SARL au capital de 5 000 €, ou entrepreneur individuel.' },
+    { key: 'legal.address', label: 'Adresse du siège' },
+    { key: 'legal.siret', label: 'SIRET / RCS' },
+    { key: 'legal.vat', label: 'Numéro de TVA intracommunautaire', help: 'Si tu n\'en as pas, écris « Non applicable ».' },
+    { key: 'legal.email', label: 'E-mail' },
+    { key: 'legal.phone', label: 'Téléphone' },
+    { key: 'legal.director', label: 'Directeur ou directrice de la publication' }
+  ] },
+  { title: 'Données et conditions', fields: [
+    { key: 'legal.retention', label: 'Durée de conservation des demandes de contact', help: 'Par exemple : 3 ans après le dernier contact.' },
+    { key: 'legal.mail_service', label: "Service d'e-mail ou de newsletter" },
+    { key: 'legal.law', label: 'Droit applicable', help: 'Par exemple : le droit français.' }
+  ] },
+  { title: 'Dates de dernière mise à jour', fields: [
+    { key: 'legal.updated_notice', label: 'Mentions légales', help: 'Par exemple : 5 novembre 2026.' },
+    { key: 'legal.updated_privacy', label: 'Politique de confidentialité' },
+    { key: 'legal.updated_cookies', label: 'Politique de cookies' },
+    { key: 'legal.updated_terms', label: "Conditions d'utilisation" }
+  ] }
+];
+
+const TEXT_TABS = {
+  texts: { title: 'Textes des pages', help: "Laisse un champ vide pour garder le texte provisoire. Les modifications apparaissent sur le site dès l'enregistrement.", groups: textGroups },
+  legal: { title: 'Pages légales', help: "Ces informations remplacent les passages surlignés en jaune sur les pages légales. Un champ vide reste surligné sur le site.", groups: legalGroups }
+};
+
 let savedTexts = {};
 
-const renderTextsForm = () => {
-  $('texts-form').replaceChildren(...textGroups().map(group => {
+const renderTextsForm = groups => {
+  $('texts-form').replaceChildren(...groups.map(group => {
     const fieldset = document.createElement('fieldset');
     const legend = document.createElement('legend');
     legend.textContent = group.title;
@@ -649,8 +680,10 @@ const renderTextsForm = () => {
   }));
 };
 
-const showTexts = async () => {
-  setActiveTab('texts');
+const showTexts = async tab => {
+  setActiveTab(tab);
+  $('texts-title').textContent = TEXT_TABS[tab].title;
+  $('texts-help').textContent = TEXT_TABS[tab].help;
   showView('view-texts');
   const { data, error } = await client.from('site_texts').select('key,value').not('key', 'like', 'image.%');
   if (error) {
@@ -660,7 +693,7 @@ const showTexts = async () => {
   }
   savedTexts = Object.fromEntries(data.map(({ key, value }) => [key, value]));
   $('save-texts').hidden = false;
-  renderTextsForm();
+  renderTextsForm(TEXT_TABS[tab].groups());
   isDirty = false;
 };
 
@@ -683,6 +716,85 @@ $('save-texts').addEventListener('click', async () => {
   isDirty = false;
   window.scrollTo(0, 0);
   showMessage('Les textes sont enregistrés.');
+});
+
+// Onglet Catégories : la liste est enregistrée dans site_texts, sous site.categories.
+// L'identifiant d'une catégorie ne change jamais : c'est lui que gardent ses projets quand elle est renommée
+const CATEGORY_MAX = 40;
+
+const loadCategories = async () => {
+  const { data, error } = await client.from('site_texts').select('value').eq('key', 'site.categories').maybeSingle();
+  if (data) window.CATEGORIES = JSON.parse(data.value);
+  fillCategories();
+  return error;
+};
+
+const addCategoryRow = (category = {}, count = 0) => {
+  const label = document.createElement('label');
+  label.textContent = 'Nom';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = category.label ?? '';
+  if (category.id) input.dataset.id = category.id;
+  const note = document.createElement('small');
+  note.className = 'ad-count';
+  note.textContent = category.id ? `${count} projet${count > 1 ? 's' : ''}` : 'Nouvelle catégorie';
+  label.append(input, note);
+  $('categories-form').append(label);
+  return input;
+};
+
+const showCategories = async () => {
+  setActiveTab('categories');
+  showView('view-categories');
+  $('categories-form').replaceChildren();
+  const categoriesError = await loadCategories();
+  const { data, error } = await client.from('projects').select('category');
+  $('save-categories').hidden = $('add-category').hidden = Boolean(categoriesError || error);
+  if (categoriesError || error) return showMessage(`Impossible de charger les catégories : ${(categoriesError || error).message}`, true);
+  window.CATEGORIES.forEach(category => addCategoryRow(category, data.filter(project => project.category === category.id).length));
+  isDirty = false;
+};
+
+$('add-category').addEventListener('click', () => addCategoryRow().focus());
+$('categories-form').addEventListener('input', () => { isDirty = true; });
+$('categories-form').addEventListener('submit', event => event.preventDefault());
+
+const availableCategoryId = (label, taken) => {
+  const base = slugify(label).replaceAll('-', '_');
+  let id = base;
+  for (let suffix = 2; taken.includes(id); suffix++) id = `${base}_${suffix}`;
+  return id;
+};
+
+$('save-categories').addEventListener('click', async () => {
+  if (isBusy) return;
+  // Une ligne ajoutée puis laissée vide est simplement ignorée
+  const rows = [...$('categories-form').querySelectorAll('input')]
+    .map(input => ({ id: input.dataset.id, label: input.value.trim() }))
+    .filter(row => row.id || row.label);
+  const labels = rows.map(row => row.label.toLowerCase());
+  const problem = rows.some(row => !row.label) ? 'Une catégorie existante ne peut pas rester sans nom.'
+    : rows.some(row => row.label.length > CATEGORY_MAX) ? `Un nom de catégorie ne peut pas dépasser ${CATEGORY_MAX} caractères.`
+    : new Set(labels).size < labels.length ? 'Deux catégories ne peuvent pas porter le même nom.'
+    : '';
+  if (problem) return showMessage(problem, true);
+  const taken = rows.map(row => row.id).filter(Boolean);
+  const categories = rows.map(row => {
+    if (row.id) return row;
+    const id = availableCategoryId(row.label, taken);
+    taken.push(id);
+    return { id, label: row.label };
+  });
+  setBusy(true);
+  showMessage('Enregistrement…');
+  const { error } = await client.from('site_texts').upsert({ key: 'site.categories', value: JSON.stringify(categories) });
+  setBusy(false);
+  if (error) return showMessage(`L'enregistrement a échoué : ${error.message}`, true);
+  isDirty = false;
+  await showCategories();
+  window.scrollTo(0, 0);
+  showMessage('Les catégories sont enregistrées.');
 });
 
 // Onglet Images : les images des pages qui ne sont ni des projets ni des articles.

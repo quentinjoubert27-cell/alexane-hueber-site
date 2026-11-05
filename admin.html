@@ -25,6 +25,8 @@
     <button class="ad-tab" type="button" data-tab="article">Articles</button>
     <button class="ad-tab" type="button" data-tab="texts">Textes</button>
     <button class="ad-tab" type="button" data-tab="images">Images</button>
+    <button class="ad-tab" type="button" data-tab="categories">Catégories</button>
+    <button class="ad-tab" type="button" data-tab="legal">Légal</button>
   </nav>
 
   <section id="view-login" hidden>
@@ -57,12 +59,12 @@
 
   <section id="view-texts" hidden>
     <div class="ad-head">
-      <h1>Textes des pages</h1>
+      <h1 id="texts-title">Textes des pages</h1>
     </div>
-    <p class="ad-help">Laisse un champ vide pour garder le texte provisoire. Les modifications apparaissent sur le site dès l'enregistrement.</p>
+    <p class="ad-help" id="texts-help"></p>
     <form class="ad-form ad-texts" id="texts-form" novalidate></form>
     <div class="ad-actions ad-texts__actions">
-      <button class="ad-button" id="save-texts" type="button">Enregistrer les textes</button>
+      <button class="ad-button" id="save-texts" type="button">Enregistrer</button>
     </div>
   </section>
 
@@ -75,6 +77,18 @@
     <ul class="ad-errors" id="image-errors" role="alert" hidden></ul>
     <div class="ad-actions ad-texts__actions">
       <button class="ad-button" id="save-images" type="button">Enregistrer les images</button>
+    </div>
+  </section>
+
+  <section id="view-categories" hidden>
+    <div class="ad-head">
+      <h1>Catégories de projets</h1>
+      <button class="ad-button ad-button--light" id="add-category" type="button">Ajouter une catégorie</button>
+    </div>
+    <p class="ad-help">Renomme une catégorie : ses projets la gardent. Une catégorie sans projet n'apparaît pas sur le site. Sa description se change dans l'onglet Textes.</p>
+    <form class="ad-form ad-texts" id="categories-form" novalidate></form>
+    <div class="ad-actions ad-texts__actions">
+      <button class="ad-button" id="save-categories" type="button">Enregistrer les catégories</button>
     </div>
   </section>
 
