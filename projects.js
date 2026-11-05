@@ -6,7 +6,7 @@
 //   slug: 'villa-exemple',            identifiant unique, utilisé dans l'adresse de la page
 //   title: 'Villa Exemple',
 //   category: 'residential',          id d'une des catégories ci-dessous
-//   location: 'Paris',                lieu, année et surface sont facultatifs : vides, ils ne s'affichent pas
+//   location: 'Paris',                lieu, année et surface sont facultatifs : vides, un texte provisoire s'affiche
 //   year: '2026',
 //   area: '250 m²',
 //   images: [                         la première sert de grande image en haut de page

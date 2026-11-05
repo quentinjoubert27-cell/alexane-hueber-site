@@ -33,8 +33,8 @@ Puis ouvrir http://localhost:4173.
 
 ## À faire
 
-- Noms et textes des projets
-- Textes et images de l'accueil et de la page Studio
+- Noms et textes des projets (les pages projet affichent du lorem ipsum tant qu'ils sont vides)
+- Textes et images de l'accueil, de Studio, de Contact et de la page Projets (lorem ipsum pour l'instant)
 - Informations de l'entreprise dans les pages légales (champs surlignés)
 - Envoi du formulaire de contact (il n'envoie rien pour l'instant)
 - Choix de l'ordre des projets dans l'admin

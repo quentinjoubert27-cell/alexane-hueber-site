@@ -1,6 +1,10 @@
 const { PROJECTS, CATEGORIES } = window;
 const MEGA_PROJECTS = 6;
 const SEARCH_SUGGESTIONS = 3;
+// Tant qu'un projet n'a pas ses vrais textes et sa fiche, sa page affiche ce texte provisoire
+const LOREM_SHORT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+const LOREM_LONG = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+const LOREM_PROJECT_TEXTS = [LOREM_LONG, LOREM_SHORT, LOREM_LONG];
 const HEADER_TOP_ZONE = .25;
 const HERO_PARALLAX = .14;
 const STUDIO_INTRO_END = .8;
@@ -173,9 +177,9 @@ const renderProject = () => {
     return;
   }
   const [cover, ...images] = project.images;
-  const [intro, ...texts] = project.texts;
+  const [intro, ...texts] = project.texts?.length ? project.texts : LOREM_PROJECT_TEXTS;
   document.title = `${project.title} — Alexane Hueber`;
-  const facts = [['Location', project.location], ['Type', categoryLabel(project.category)], ['Year', project.year], ['Area', project.area]].filter(([, value]) => value);
+  const facts = [['Location', project.location || 'Lorem ipsum'], ['Type', categoryLabel(project.category)], ['Year', project.year || 'Lorem'], ['Area', project.area || 'Lorem']];
   main.innerHTML = `
     <section class="pj-hero">${mediaHTML(cover)}</section>
     <section class="pj-info">
@@ -207,7 +211,7 @@ const renderWorld = () => {
   document.querySelector('main').innerHTML = `
     <section class="ar-head st-reveal">
       <h1><span class="wide">Hueber</span><em>world</em></h1>
-      <p>Stories, inspirations and news from the studio.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </section>
     ${featured ? `
     <a class="ar-featured" href="${articleHref(featured)}">
@@ -254,8 +258,8 @@ const renderArticle = () => {
 // Page Projets : une ligne par projet, avec des dispositions de photos qui alternent
 const ROW_LAYOUTS = [['narrow', 'wide'], ['narrow', 'narrow', 'narrow'], ['wide', 'narrow']];
 // Textes provisoires, à remplacer par les vrais
-const PROJECTS_INTRO = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
-const CATEGORY_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+const PROJECTS_INTRO = LOREM_LONG;
+const CATEGORY_TEXT = LOREM_SHORT;
 
 // Place une photo horizontale dans l'emplacement large quand le projet en a une
 const rowPhotos = (images, layout) => {

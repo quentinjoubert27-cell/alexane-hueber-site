@@ -14,27 +14,27 @@
 // Articles provisoires, à remplacer par les vrais. En attendant, ils réutilisent les photos des projets.
 const articlePhotos = window.PROJECTS.flatMap(project => project.images);
 
-const placeholderArticle = (number, date, tag) => ({
+const placeholderArticle = (number, date) => ({
   slug: `article-${number}`,
-  title: `Article ${number}`,
+  title: `Lorem ipsum ${number}`,
   date,
-  tag,
-  excerpt: 'Placeholder summary of the article, in one or two sentences, to be replaced by the real text.',
+  tag: 'Lorem ipsum',
+  excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   images: Array.from({ length: 8 }, (_, i) => articlePhotos[(Number(number) * 4 + i) % articlePhotos.length]),
   texts: [
-    'Placeholder introduction of the article, to be replaced by the real text.',
-    'Placeholder paragraph telling the first part of the story: where the idea comes from and why it matters.',
-    'Placeholder paragraph with more details about the subject, the people involved and what was discovered along the way.',
-    'Placeholder paragraph closing the article, to be replaced by the real text.'
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
   ]
 });
 
 window.ARTICLES = [
-  placeholderArticle('01', '2026-10-28', 'Inspiration'),
-  placeholderArticle('02', '2026-10-14', 'Behind the scenes'),
-  placeholderArticle('03', '2026-09-30', 'Materials'),
-  placeholderArticle('04', '2026-09-16', 'Inspiration'),
-  placeholderArticle('05', '2026-09-02', 'Travel'),
-  placeholderArticle('06', '2026-08-19', 'Behind the scenes'),
-  placeholderArticle('07', '2026-08-05', 'Materials')
+  placeholderArticle('01', '2026-10-28'),
+  placeholderArticle('02', '2026-10-14'),
+  placeholderArticle('03', '2026-09-30'),
+  placeholderArticle('04', '2026-09-16'),
+  placeholderArticle('05', '2026-09-02'),
+  placeholderArticle('06', '2026-08-19'),
+  placeholderArticle('07', '2026-08-05')
 ];
