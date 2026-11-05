@@ -559,11 +559,8 @@ if (document.body.dataset.page === 'studio') {
   });
 }
 
-// Les formulaires passent par Web3Forms, qui envoie la demande par mail au studio. Cette clé est publique par conception :
-// elle permet seulement d'envoyer un mail à l'adresse choisie à sa création
-const WEB3FORMS_KEY = 'e7bd42fc-72c0-4783-b0e6-85580b93c72e';
-
-const connectForm = (form, status, messages) => form.addEventListener('submit', async event => {
+// Les formulaires passent par la fonction Supabase « contact », qui envoie la demande par mail au studio
+const connectForm = (form, status, kind, messages) => form.addEventListener('submit', async event => {
   event.preventDefault();
   if (!form.reportValidity()) return;
   const button = form.querySelector('button[type="submit"]');
@@ -571,10 +568,10 @@ const connectForm = (form, status, messages) => form.addEventListener('submit', 
   button.disabled = true;
   status.hidden = true;
   try {
-    const response = await fetch('https://api.web3forms.com/submit', {
+    const response = await fetch(`${window.SUPABASE_URL}/functions/v1/contact`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ access_key: WEB3FORMS_KEY, from_name: 'Alexane Hueber website', subject: messages.subject(fields), ...fields })
+      headers: { 'Content-Type': 'application/json', apikey: window.SUPABASE_KEY },
+      body: JSON.stringify({ ...fields, kind, newsletter: 'newsletter' in fields })
     });
     if (!response.ok) throw new Error(`Réponse ${response.status}`);
     form.reset();
@@ -587,17 +584,15 @@ const connectForm = (form, status, messages) => form.addEventListener('submit', 
   button.disabled = false;
 });
 
-connectForm(document.querySelector('.newsletter'), document.querySelector('.newsletter__status'), {
-  subject: () => 'New newsletter subscription',
+connectForm(document.querySelector('.newsletter'), document.querySelector('.newsletter__status'), 'newsletter', {
   sent: 'Thank you for subscribing.',
   failed: 'Your subscription could not be registered. Please try again in a moment.'
 });
 
 if (document.body.dataset.page === 'contact') {
   const contactForm = document.querySelector('.ct-form');
-  connectForm(contactForm, contactForm.querySelector('.ct-status'), {
-    subject: fields => `New enquiry: ${fields.inquiry_type} — ${fields.first_name} ${fields.last_name}`,
-    sent: 'Thank you, your message has been sent. We will get back to you soon.',
-    failed: 'Your message could not be sent. Please try again in a moment.'
+  connectForm(contactForm, contactForm.querySelector('.ct-status'), 'contact', {
+    sent: 'Merci, votre message a bien été envoyé. Nous vous répondrons rapidement.',
+    failed: "Votre message n'a pas pu être envoyé. Merci de réessayer dans un instant."
   });
 }

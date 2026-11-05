@@ -24,6 +24,7 @@ Puis ouvrir http://localhost:4173.
 | `admin.html`, `admin.js`, `admin.css` | Page admin : projets, articles, textes, images, catégories et pages légales |
 | `site-loader.js` | Charge les projets, articles et textes depuis Supabase, puis lance le site |
 | `supabase-config.js` | Adresse et clé publique de Supabase |
+| `supabase/functions/contact/index.ts` | Envoi des mails du formulaire de contact et de la newsletter, avec Brevo |
 | `supabase/schema.sql`, `supabase/articles.sql`, `supabase/textes.sql`, `supabase/categories.sql` | Tables, photos et règles de sécurité de la base |
 | `projects.js` | Catégories et projets de secours, si la base est vide ou injoignable |
 | `articles.js` | Articles d'exemple, si la base n'en contient aucun de publié |
@@ -37,4 +38,3 @@ Puis ouvrir http://localhost:4173.
 - Textes de l'accueil, de Studio, de Contact et de la page Projets, à saisir dans l'onglet Textes de l'admin
 - Informations de l'entreprise dans les pages légales, à saisir dans l'onglet Légal de l'admin
 - Choix de l'ordre des projets dans l'admin
-- Liste d'inscrits à la newsletter : pour l'instant, chaque inscription arrive par mail (Web3Forms)
