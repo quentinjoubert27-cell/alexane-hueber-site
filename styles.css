@@ -324,6 +324,8 @@ body:not([data-page="home"]) .site-header.is-hidden { transform: translateY(-100
 .ct-check input { flex: none; width: 16px; height: 16px; margin: 0; border: 1px solid rgba(15,15,15,.6); background: none; appearance: none; cursor: pointer; }
 .ct-check input:checked { background: var(--ink); box-shadow: inset 0 0 0 2px var(--cream); }
 .ct-submit { display: block; width: 100%; min-height: max(3.1vw, 46px); border: 0; background: var(--ink); color: var(--cream); font: inherit; font-size: clamp(16px, .96vw, 18px); cursor: pointer; }
+.form-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.newsletter__status { margin-top: 12px; font-size: clamp(14px, .96vw, 17px); }
 .ct-status { margin-top: 12px; text-align: center; font-size: clamp(14px, .96vw, 17px); }
 
 @media (max-width: 900px) {

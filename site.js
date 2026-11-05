@@ -100,13 +100,15 @@ document.querySelector('.site-header').innerHTML = `
 
 document.querySelector('.site-footer').innerHTML = `
   <div class="footer-top">
-    <form class="newsletter" action="#" onsubmit="event.preventDefault()">
+    <form class="newsletter">
       <h2>Sign up for our news<br>and invitations</h2>
       <div class="newsletter__field">
-        <input type="email" placeholder="Email address*" aria-label="Email address" required>
+        <input type="email" name="email" autocomplete="email" placeholder="Email address*" aria-label="Email address" required>
         <button type="submit" aria-label="Subscribe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12h18M14 5l7 7-7 7"/></svg></button>
       </div>
       <label class="check"><input type="checkbox" required> I accept the terms and conditions*</label>
+      <input class="form-trap" type="checkbox" name="botcheck" tabindex="-1" aria-hidden="true">
+      <p class="newsletter__status" role="status" hidden></p>
     </form>
     <div class="footer-col">
       <h3 class="wide">Studio</h3>
@@ -557,11 +559,45 @@ if (document.body.dataset.page === 'studio') {
   });
 }
 
-// Le formulaire n'est relié à aucun service d'envoi pour l'instant : on le dit au lieu de simuler un envoi
+// Les formulaires passent par Web3Forms, qui envoie la demande par mail au studio. Cette clé est publique par conception :
+// elle permet seulement d'envoyer un mail à l'adresse choisie à sa création
+const WEB3FORMS_KEY = 'e7bd42fc-72c0-4783-b0e6-85580b93c72e';
+
+const connectForm = (form, status, messages) => form.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (!form.reportValidity()) return;
+  const button = form.querySelector('button[type="submit"]');
+  const fields = Object.fromEntries(new FormData(form));
+  button.disabled = true;
+  status.hidden = true;
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ access_key: WEB3FORMS_KEY, from_name: 'Alexane Hueber website', subject: messages.subject(fields), ...fields })
+    });
+    if (!response.ok) throw new Error(`Réponse ${response.status}`);
+    form.reset();
+    status.textContent = messages.sent;
+  } catch (error) {
+    console.warn('Envoi du formulaire impossible :', error.message);
+    status.textContent = messages.failed;
+  }
+  status.hidden = false;
+  button.disabled = false;
+});
+
+connectForm(document.querySelector('.newsletter'), document.querySelector('.newsletter__status'), {
+  subject: () => 'New newsletter subscription',
+  sent: 'Thank you for subscribing.',
+  failed: 'Your subscription could not be registered. Please try again in a moment.'
+});
+
 if (document.body.dataset.page === 'contact') {
   const contactForm = document.querySelector('.ct-form');
-  contactForm.addEventListener('submit', event => {
-    event.preventDefault();
-    contactForm.querySelector('.ct-status').hidden = false;
+  connectForm(contactForm, contactForm.querySelector('.ct-status'), {
+    subject: fields => `New enquiry: ${fields.inquiry_type} — ${fields.first_name} ${fields.last_name}`,
+    sent: 'Thank you, your message has been sent. We will get back to you soon.',
+    failed: 'Your message could not be sent. Please try again in a moment.'
   });
 }

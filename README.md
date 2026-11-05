@@ -36,5 +36,5 @@ Puis ouvrir http://localhost:4173.
 - Noms et textes des projets (les pages projet affichent du lorem ipsum tant qu'ils sont vides)
 - Textes de l'accueil, de Studio, de Contact et de la page Projets, à saisir dans l'onglet Textes de l'admin
 - Informations de l'entreprise dans les pages légales, à saisir dans l'onglet Légal de l'admin
-- Envoi du formulaire de contact (il n'envoie rien pour l'instant)
 - Choix de l'ordre des projets dans l'admin
+- Liste d'inscrits à la newsletter : pour l'instant, chaque inscription arrive par mail (Web3Forms)
