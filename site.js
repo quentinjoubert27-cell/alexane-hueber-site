@@ -5,6 +5,8 @@ const SEARCH_SUGGESTIONS = 3;
 const LOREM_SHORT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 const LOREM_LONG = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
 const LOREM_PROJECT_TEXTS = [LOREM_LONG, LOREM_SHORT, LOREM_LONG];
+// Texte saisi dans l'onglet Textes de l'admin, sinon le texte provisoire
+const pageText = (key, fallback) => window.SITE_TEXTS?.[key] || fallback;
 const HEADER_TOP_ZONE = .25;
 const HERO_PARALLAX = .14;
 const STUDIO_INTRO_END = .8;
@@ -211,7 +213,7 @@ const renderWorld = () => {
   document.querySelector('main').innerHTML = `
     <section class="ar-head st-reveal">
       <h1><span class="wide">Hueber</span><em>world</em></h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p>${escapeHTML(pageText('world.tagline', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'))}</p>
     </section>
     ${featured ? `
     <a class="ar-featured" href="${articleHref(featured)}">
@@ -289,7 +291,7 @@ const renderProjects = () => {
   document.querySelector('main').innerHTML = `
     <section class="pl-head st-reveal">
       <h1 class="wide">Interior Projects</h1>
-      <p>${PROJECTS_INTRO}</p>
+      <p>${escapeHTML(pageText('projects.intro', PROJECTS_INTRO))}</p>
       <nav aria-label="Project categories">
         ${groups.map(({ category }) => `<a class="more" href="#${category.id}">${escapeHTML(category.label)}</a>`).join('')}
       </nav>
@@ -298,7 +300,7 @@ const renderProjects = () => {
     <section class="pl-group" id="${category.id}">
       <div class="pl-group__head st-reveal">
         <h2 class="wide">${escapeHTML(category.label)}</h2>
-        <p>${CATEGORY_TEXT}</p>
+        <p>${escapeHTML(pageText(`projects.category_${category.id}`, CATEGORY_TEXT))}</p>
       </div>
       ${projects.map(projectRowHTML).join('')}
     </section>`).join('')}`;

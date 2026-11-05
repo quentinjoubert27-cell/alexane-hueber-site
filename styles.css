@@ -437,6 +437,9 @@ body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55p
   .lg-updated { margin-bottom: 24px; }
 }
 
+/* Évite d'apercevoir les contenus provisoires avant le chargement des vrais */
+.js:not(.texts-ready) :is([data-text], [data-text-paragraphs], [data-text-list], [data-image]) { visibility: hidden; }
+
 /* Animations d'affichage */
 @keyframes hero-in { from { opacity: 0; transform: scale(1.08); } }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }

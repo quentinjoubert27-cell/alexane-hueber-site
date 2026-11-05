@@ -20,6 +20,13 @@
 <main class="ad-main">
   <p class="ad-message" id="message" role="status" hidden></p>
 
+  <nav class="ad-tabs" id="tabs" aria-label="Contenus" hidden>
+    <button class="ad-tab" type="button" data-tab="project">Projets</button>
+    <button class="ad-tab" type="button" data-tab="article">Articles</button>
+    <button class="ad-tab" type="button" data-tab="texts">Textes</button>
+    <button class="ad-tab" type="button" data-tab="images">Images</button>
+  </nav>
+
   <section id="view-login" hidden>
     <h1>Connexion</h1>
     <form class="ad-form ad-narrow" id="login-form">
@@ -35,10 +42,6 @@
   </section>
 
   <section id="view-list" hidden>
-    <nav class="ad-tabs" aria-label="Contenus">
-      <button class="ad-tab" type="button" data-tab="project">Projets</button>
-      <button class="ad-tab" type="button" data-tab="article">Articles</button>
-    </nav>
     <div class="ad-head">
       <h1 id="list-title">Projets</h1>
       <button class="ad-button" id="new-project" type="button">Nouveau projet</button>
@@ -49,6 +52,29 @@
     </div>
     <ul class="ad-list" id="project-list"></ul>
     <p class="ad-empty" id="list-empty" hidden></p>
+  </section>
+
+  <section id="view-texts" hidden>
+    <div class="ad-head">
+      <h1>Textes des pages</h1>
+    </div>
+    <p class="ad-help">Laisse un champ vide pour garder le texte provisoire. Les modifications apparaissent sur le site dès l'enregistrement.</p>
+    <form class="ad-form ad-texts" id="texts-form" novalidate></form>
+    <div class="ad-actions ad-texts__actions">
+      <button class="ad-button" id="save-texts" type="button">Enregistrer les textes</button>
+    </div>
+  </section>
+
+  <section id="view-images" hidden>
+    <div class="ad-head">
+      <h1>Images des pages</h1>
+    </div>
+    <p class="ad-help">Les images des projets et des articles se changent dans leurs onglets. Ici, elles sont automatiquement allégées avant l'envoi et apparaissent sur le site dès l'enregistrement. Formats acceptés : JPEG, PNG et WebP.</p>
+    <div id="image-groups"></div>
+    <ul class="ad-errors" id="image-errors" role="alert" hidden></ul>
+    <div class="ad-actions ad-texts__actions">
+      <button class="ad-button" id="save-images" type="button">Enregistrer les images</button>
+    </div>
   </section>
 
   <section id="view-editor" hidden>
