@@ -1,4 +1,4 @@
--- Articles de HUEBERworld : à exécuter une fois dans Supabase (SQL Editor), après schema.sql.
+-- Articles de HUEBERvibe : à exécuter une fois dans Supabase (SQL Editor), après schema.sql.
 -- Mêmes règles que les projets : lecture publique des articles publiés, écriture réservée aux admins.
 -- Leurs photos vont dans le même espace que celles des projets, sous le dossier articles/.
 

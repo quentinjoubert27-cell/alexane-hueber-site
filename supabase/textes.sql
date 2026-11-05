@@ -1,4 +1,4 @@
--- Textes des pages (accueil, Studio, Contact, Projets, HUEBERworld) : à exécuter une fois dans Supabase (SQL Editor).
+-- Textes des pages (accueil, Studio, Contact, Projets, HUEBERvibe) : à exécuter une fois dans Supabase (SQL Editor).
 -- Lecture publique ; écriture réservée aux admins. Un texte absent garde le texte provisoire du site.
 
 create table public.site_texts (

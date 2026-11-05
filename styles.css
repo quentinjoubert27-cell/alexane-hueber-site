@@ -337,7 +337,7 @@ body:not([data-page="home"]) .site-header.is-hidden { transform: translateY(-100
   .ct-field { margin-bottom: 10px; }
 }
 
-/* HUEBERworld */
+/* HUEBERvibe */
 body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55px; }
 .ar-head { padding: 6vw var(--gutter) 5vw; text-align: center; }
 .ar-head h1 { font-weight: 400; font-size: clamp(30px, 6.4vw, 120px); line-height: 1; }

@@ -44,10 +44,10 @@ const megaHTML = CATEGORIES.map(category => {
           </div>`;
 }).join('');
 
-// La recherche couvre les projets (proposés en premier) et les articles de HUEBERworld
+// La recherche couvre les projets (proposés en premier) et les articles de HUEBERvibe
 const searchEntries = [
   ...PROJECTS.map(project => ({ href: projectHref(project), image: project.images[0], title: project.title, label: categoryLabel(project.category) })),
-  ...sortedArticles().map(article => ({ href: articleHref(article), image: article.images[0], title: article.title, label: `HUEBERworld · ${article.tag}` }))
+  ...sortedArticles().map(article => ({ href: articleHref(article), image: article.images[0], title: article.title, label: `HUEBERvibe · ${article.tag}` }))
 ];
 const searchItemsHTML = searchEntries.map(entry => `<a class="search__item" href="${entry.href}">
         <span class="search__img">${mediaHTML(entry.image)}</span>
@@ -67,11 +67,11 @@ document.querySelector('.site-header').innerHTML = `
         <div class="mega" style="--mega-cols: ${megaColumns}">${megaHTML}<a class="more mega__all" href="projects.html">All projects</a></div>
       </li>
       <li><a href="studio.html">Studio</a></li>
-      <li class="nav-world-mobile"><a class="nav-world" href="world.html"><span class="wide">Hueber</span><em>world</em></a></li>
+      <li class="nav-world-mobile"><a class="nav-world" href="vibe.html"><span class="wide">Hueber</span><em>vibe</em></a></li>
     </ul>
     <a class="site-logo wide" href="${homeHref || '#'}" aria-label="Alexane Hueber — home"><span>Alexane</span> <span>Hueber</span></a>
     <ul class="nav-side">
-      <li class="nav-world-item"><a class="nav-world" href="world.html"><span class="wide">Hueber</span><em>world</em></a></li>
+      <li class="nav-world-item"><a class="nav-world" href="vibe.html"><span class="wide">Hueber</span><em>vibe</em></a></li>
       <li>
         <button class="nav-icon search-toggle" type="button" aria-label="Search" aria-expanded="false" aria-controls="search">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
@@ -115,7 +115,7 @@ document.querySelector('.site-footer').innerHTML = `
       <ul>
         <li><a href="studio.html">About</a></li>
         <li><a href="projects.html">Projects</a></li>
-        <li><a href="world.html">HUEBERworld</a></li>
+        <li><a href="vibe.html">HUEBERvibe</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -196,7 +196,7 @@ const renderProject = () => {
     </section>
     ${buildBlocks(images, texts).map(blockHTML).join('\n')}`;
 };
-// HUEBERworld : liste des articles et page de lecture
+// HUEBERvibe : liste des articles et page de lecture
 const formatDate = date => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
 const articleMetaHTML = article => `<p class="ar-meta"><time datetime="${escapeHTML(article.date)}">${formatDate(article.date)}</time> · ${escapeHTML(article.tag)}</p>`;
 const articleCardHTML = article => `
@@ -213,7 +213,7 @@ const renderWorld = () => {
   const [featured, ...others] = sortedArticles();
   document.querySelector('main').innerHTML = `
     <section class="ar-head st-reveal">
-      <h1><span class="wide">Hueber</span><em>world</em></h1>
+      <h1><span class="wide">Hueber</span><em>vibe</em></h1>
       <p>${escapeHTML(pageText('world.tagline', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'))}</p>
     </section>
     ${featured ? `
@@ -235,14 +235,14 @@ const renderArticle = () => {
   const slug = new URLSearchParams(location.search).get('a');
   const article = articles.find(item => item.slug === slug);
   if (!article) {
-    document.title = 'Article not found — HUEBERworld';
-    main.innerHTML = `<section class="pj-missing"><h1 class="wide">Article not found</h1><a class="more" href="world.html">Back to HUEBERworld</a></section>`;
+    document.title = 'Article not found — HUEBERvibe';
+    main.innerHTML = `<section class="pj-missing"><h1 class="wide">Article not found</h1><a class="more" href="vibe.html">Back to HUEBERvibe</a></section>`;
     return;
   }
   const [cover, ...images] = article.images;
   const [intro, ...texts] = article.texts;
   const more = articles.filter(item => item !== article).slice(0, 3);
-  document.title = `${article.title} — HUEBERworld`;
+  document.title = `${article.title} — HUEBERvibe`;
   main.innerHTML = `
     <section class="pj-hero">${mediaHTML(cover)}</section>
     <section class="ar-title st-reveal">
@@ -252,9 +252,9 @@ const renderArticle = () => {
     </section>
     ${buildBlocks(images, texts).map(blockHTML).join('\n')}
     <section class="ar-more">
-      <h2 class="wide st-reveal">More from HUEBERworld</h2>
+      <h2 class="wide st-reveal">More from HUEBERvibe</h2>
       ${more.length ? `<div class="ar-grid">${more.map(articleCardHTML).join('')}</div>` : ''}
-      <a class="more" href="world.html">All articles</a>
+      <a class="more" href="vibe.html">All articles</a>
     </section>`;
 };
 

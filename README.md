@@ -19,7 +19,7 @@ Puis ouvrir http://localhost:4173.
 | `project.html` | Gabarit d'une page projet |
 | `studio.html` | Page Studio |
 | `contact.html` | Page Contact |
-| `world.html`, `article.html` | HUEBERworld : liste des articles et page de lecture |
+| `vibe.html`, `article.html` | HUEBERvibe : liste des articles et page de lecture |
 | `mentions-legales.html`, `politique-de-confidentialite.html`, `politique-cookies.html`, `conditions-utilisation.html` | Pages légales |
 | `admin.html`, `admin.js`, `admin.css` | Page admin : projets, articles, textes, images, catégories et pages légales |
 | `site-loader.js` | Charge les projets, articles et textes depuis Supabase, puis lance le site |
