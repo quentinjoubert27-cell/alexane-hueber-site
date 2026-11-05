@@ -253,6 +253,9 @@ const renderArticle = () => {
 
 // Page Projets : une ligne par projet, avec des dispositions de photos qui alternent
 const ROW_LAYOUTS = [['narrow', 'wide'], ['narrow', 'narrow', 'narrow'], ['wide', 'narrow']];
+// Textes provisoires, à remplacer par les vrais
+const PROJECTS_INTRO = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+const CATEGORY_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
 // Place une photo horizontale dans l'emplacement large quand le projet en a une
 const rowPhotos = (images, layout) => {
@@ -282,13 +285,17 @@ const renderProjects = () => {
   document.querySelector('main').innerHTML = `
     <section class="pl-head st-reveal">
       <h1 class="wide">Interior Projects</h1>
+      <p>${PROJECTS_INTRO}</p>
       <nav aria-label="Project categories">
         ${groups.map(({ category }) => `<a class="more" href="#${category.id}">${escapeHTML(category.label)}</a>`).join('')}
       </nav>
     </section>
     ${groups.map(({ category, projects }) => `
     <section class="pl-group" id="${category.id}">
-      <h2 class="wide st-reveal">${escapeHTML(category.label)}</h2>
+      <div class="pl-group__head st-reveal">
+        <h2 class="wide">${escapeHTML(category.label)}</h2>
+        <p>${CATEGORY_TEXT}</p>
+      </div>
       ${projects.map(projectRowHTML).join('')}
     </section>`).join('')}`;
   // Le contenu vient d'être créé : le navigateur n'a pas pu aller seul à la catégorie demandée dans l'adresse
