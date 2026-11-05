@@ -115,9 +115,11 @@ document.querySelector('.site-footer').innerHTML = `
       <h3 class="wide">Support</h3>
       <ul>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="#">Trade</a></li>
-        <li><a href="#">Careers</a></li>
         <li><a href="#">FAQ</a></li>
+        <li><a href="legal-notice.html">Legal Notice</a></li>
+        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="cookie-policy.html">Cookie Policy</a></li>
+        <li><a href="terms-of-use.html">Terms of Use</a></li>
       </ul>
     </div>
   </div>
@@ -125,8 +127,8 @@ document.querySelector('.site-footer').innerHTML = `
   <div class="footer-legal">
     <span>Alexane Hueber © 2026 — All rights reserved</span>
     <ul>
-      <li><a href="#">Legal Notice</a></li>
-      <li><a href="#">Privacy</a></li>
+      <li><a href="legal-notice.html">Legal Notice</a></li>
+      <li><a href="privacy-policy.html">Privacy</a></li>
     </ul>
   </div>
 `;
