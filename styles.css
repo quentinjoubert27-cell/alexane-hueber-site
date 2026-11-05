@@ -336,7 +336,7 @@ body:not([data-page="home"]) .site-header.is-hidden { transform: translateY(-100
 }
 
 /* HUEBERworld */
-body[data-page="world"] main { padding-top: 55px; }
+body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55px; }
 .ar-head { padding: 6vw var(--gutter) 5vw; text-align: center; }
 .ar-head h1 { font-weight: 400; font-size: clamp(30px, 6.4vw, 120px); line-height: 1; }
 .ar-head h1 em { font-size: 1.15em; }
@@ -367,7 +367,7 @@ body[data-page="world"] main { padding-top: 55px; }
 .ar-more > .more { margin-top: 0; }
 
 @media (max-width: 900px) {
-  body[data-page="world"] main { padding-top: 65px; }
+  body[data-page="world"] main, body[data-page="projects"] main { padding-top: 65px; }
   .ar-head { padding: 40px 16px 32px; }
   .ar-head h1 { font-size: 11vw; }
   .ar-head p { margin-top: 12px; }
@@ -383,6 +383,39 @@ body[data-page="world"] main { padding-top: 55px; }
   .ar-title > p:not(.ar-meta) { max-width: none; margin-top: 20px; }
   .ar-more { padding-top: 56px; padding-bottom: 56px; }
   .ar-more .ar-grid { padding: 32px 0 40px; }
+}
+
+/* Page Projets */
+.pl-head { padding: 6.6vw var(--gutter) 6vw; text-align: center; }
+.pl-head h1 { font-size: clamp(20px, 1.65vw, 30px); }
+.pl-head nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 1.4vw; margin-top: 2vw; }
+.pl-head .more { font-size: clamp(15px, .96vw, 18px); }
+.pl-group { scroll-margin-top: 55px; }
+.pl-group > h2 { padding: 6.6vw var(--gutter); border-top: 1px solid rgba(15,15,15,.15); text-align: center; font-size: clamp(20px, 1.65vw, 30px); }
+.pl-row { display: grid; grid-template-columns: 25.6vw 1fr; padding: 1.7vw .8vw; border-top: 1px solid rgba(15,15,15,.15); }
+.pl-row h3 { font-size: clamp(15px, 1.1vw, 20px); }
+.pl-row .more { margin-top: .6vw; padding-bottom: 2px; font-size: clamp(15px, .96vw, 18px); }
+.pl-row__photos { display: flex; gap: .8vw; }
+.pl-photo--narrow { width: 23.7vw; }
+.pl-photo--wide { width: 48.2vw; }
+.pl-photo .pj-img { height: 33vw; }
+.pl-row .media { transition: transform 1.4s var(--ease); }
+.pl-row:hover .media { transform: scale(1.03); }
+.mega__all { display: none; }
+
+@media (max-width: 900px) {
+  .pl-head { padding: 40px 16px; }
+  .pl-head nav { gap: 4px 16px; margin-top: 16px; }
+  .pl-group { scroll-margin-top: 65px; }
+  .pl-group > h2 { padding: 40px 16px; }
+  .pl-row { display: block; padding: 16px 16px 24px; }
+  .pl-row .more { margin: 6px 0 14px; }
+  .pl-row__photos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pl-photo--narrow, .pl-photo--wide { width: auto; }
+  .pl-photo--wide { grid-column: 1 / -1; }
+  .pl-photo .pj-img { height: auto; aspect-ratio: 4 / 5; }
+  .pl-photo--wide .pj-img { aspect-ratio: 3 / 2; }
+  .has-panel.is-expanded .mega__all { display: inline-block; margin-top: 24px; font-size: 18px; font-style: normal; }
 }
 
 /* Pages légales */

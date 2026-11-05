@@ -15,6 +15,7 @@ Puis ouvrir http://localhost:4173.
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Accueil |
+| `projects.html` | Liste de tous les projets |
 | `project.html` | Gabarit d'une page projet |
 | `studio.html` | Page Studio |
 | `contact.html` | Page Contact |

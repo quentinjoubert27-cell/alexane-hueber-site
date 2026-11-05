@@ -34,7 +34,7 @@ const megaHTML = CATEGORIES.map(category => {
             <ul>
               ${projects.slice(0, MEGA_PROJECTS).map(project => `<li><a href="${projectHref(project)}">${escapeHTML(project.title)}</a></li>`).join('\n              ')}
             </ul>
-            ${projects.length > MEGA_PROJECTS ? '<a class="more" href="#">View more</a>' : ''}
+            ${projects.length > MEGA_PROJECTS ? `<a class="more" href="projects.html#${category.id}">View more</a>` : ''}
           </div>`;
 }).join('');
 
@@ -57,8 +57,8 @@ document.querySelector('.site-header').innerHTML = `
     </button>
     <ul class="nav-main" id="nav-main">
       <li class="has-panel">
-        <a class="projects-link" href="${homeHref}#projets">Projects<svg class="nav-chevron" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
-        <div class="mega" style="--mega-cols: ${megaColumns}">${megaHTML}</div>
+        <a class="projects-link" href="projects.html">Projects<svg class="nav-chevron" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
+        <div class="mega" style="--mega-cols: ${megaColumns}">${megaHTML}<a class="more mega__all" href="projects.html">All projects</a></div>
       </li>
       <li><a href="studio.html">Studio</a></li>
       <li class="nav-world-mobile"><a class="nav-world" href="world.html"><span class="wide">Hueber</span><em>world</em></a></li>
@@ -106,7 +106,7 @@ document.querySelector('.site-footer').innerHTML = `
       <h3 class="wide">Studio</h3>
       <ul>
         <li><a href="studio.html">About</a></li>
-        <li><a href="#">Projects</a></li>
+        <li><a href="projects.html">Projects</a></li>
         <li><a href="world.html">HUEBERworld</a></li>
       </ul>
     </div>
@@ -251,6 +251,51 @@ const renderArticle = () => {
     </section>`;
 };
 
+// Page Projets : une ligne par projet, avec des dispositions de photos qui alternent
+const ROW_LAYOUTS = [['narrow', 'wide'], ['narrow', 'narrow', 'narrow'], ['wide', 'narrow']];
+
+// Place une photo horizontale dans l'emplacement large quand le projet en a une
+const rowPhotos = (images, layout) => {
+  const remaining = [...images];
+  return layout.map(size => {
+    const landscape = size === 'wide' ? remaining.findIndex(isLandscape) : -1;
+    const [image] = remaining.splice(Math.max(landscape, 0), 1);
+    return { size, image };
+  }).filter(slot => slot.image);
+};
+
+const projectRowHTML = (project, index) => `
+      <a class="pl-row" href="${projectHref(project)}">
+        <div class="pl-row__text st-reveal">
+          <h3 class="wide">${escapeHTML(project.title)}</h3>
+          <span class="more">Explore the Project</span>
+        </div>
+        <div class="pl-row__photos">
+          ${rowPhotos(project.images, ROW_LAYOUTS[index % ROW_LAYOUTS.length]).map(({ size, image }) => `<div class="pj-cell pl-photo pl-photo--${size}"><div class="pj-img">${mediaHTML(image)}</div></div>`).join('')}
+        </div>
+      </a>`;
+
+const renderProjects = () => {
+  const groups = CATEGORIES
+    .map(category => ({ category, projects: PROJECTS.filter(project => project.category === category.id) }))
+    .filter(group => group.projects.length);
+  document.querySelector('main').innerHTML = `
+    <section class="pl-head st-reveal">
+      <h1 class="wide">Interior Projects</h1>
+      <nav aria-label="Project categories">
+        ${groups.map(({ category }) => `<a class="more" href="#${category.id}">${escapeHTML(category.label)}</a>`).join('')}
+      </nav>
+    </section>
+    ${groups.map(({ category, projects }) => `
+    <section class="pl-group" id="${category.id}">
+      <h2 class="wide st-reveal">${escapeHTML(category.label)}</h2>
+      ${projects.map(projectRowHTML).join('')}
+    </section>`).join('')}`;
+  // Le contenu vient d'être créé : le navigateur n'a pas pu aller seul à la catégorie demandée dans l'adresse
+  document.getElementById(location.hash.slice(1))?.scrollIntoView();
+};
+
+if (document.body.dataset.page === 'projects') renderProjects();
 if (document.body.dataset.page === 'project') renderProject();
 if (document.body.dataset.page === 'world') renderWorld();
 if (document.body.dataset.page === 'article') renderArticle();
