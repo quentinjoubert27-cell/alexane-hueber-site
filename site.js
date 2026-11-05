@@ -116,10 +116,10 @@ document.querySelector('.site-footer').innerHTML = `
       <ul>
         <li><a href="contact.html">Contact</a></li>
         <li><a href="#">FAQ</a></li>
-        <li><a href="legal-notice.html">Legal Notice</a></li>
-        <li><a href="privacy-policy.html">Privacy Policy</a></li>
-        <li><a href="cookie-policy.html">Cookie Policy</a></li>
-        <li><a href="terms-of-use.html">Terms of Use</a></li>
+        <li><a href="mentions-legales.html">Mentions légales</a></li>
+        <li><a href="politique-de-confidentialite.html">Politique de confidentialité</a></li>
+        <li><a href="politique-cookies.html">Politique de cookies</a></li>
+        <li><a href="conditions-utilisation.html">Conditions d'utilisation</a></li>
       </ul>
     </div>
   </div>
@@ -127,8 +127,8 @@ document.querySelector('.site-footer').innerHTML = `
   <div class="footer-legal">
     <span>Alexane Hueber © 2026 — All rights reserved</span>
     <ul>
-      <li><a href="legal-notice.html">Legal Notice</a></li>
-      <li><a href="privacy-policy.html">Privacy</a></li>
+      <li><a href="mentions-legales.html">Mentions légales</a></li>
+      <li><a href="politique-de-confidentialite.html">Confidentialité</a></li>
     </ul>
   </div>
 `;
