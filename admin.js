@@ -555,9 +555,8 @@ const textGroups = () => [
     { key: 'home.tile1_text', label: 'Vignette 1 : texte' },
     { key: 'home.tile2_title', label: 'Vignette 2 : titre' },
     { key: 'home.tile2_text', label: 'Vignette 2 : texte' },
-    { key: 'home.panel1_title', label: 'Grand panneau 1 : titre' },
-    { key: 'home.panel1_text', label: 'Grand panneau 1 : sous-titre' },
-    { key: 'home.panel2_title', label: 'Grand panneau 2 : titre' }
+    { key: 'home.panel1_project', label: 'Grand panneau 1 : projet', options: publishedProjects },
+    { key: 'home.panel2_project', label: 'Grand panneau 2 : projet', options: publishedProjects }
   ] },
   { title: 'Studio', fields: [
     { key: 'studio.about', label: 'Présentation', rows: 8, help: 'Laisse une ligne vide entre deux paragraphes.' },
@@ -579,6 +578,7 @@ const textGroups = () => [
 ];
 
 let savedTexts = {};
+let publishedProjects = [];
 
 const renderTextsForm = () => {
   $('texts-form').replaceChildren(...textGroups().map(group => {
@@ -589,9 +589,15 @@ const renderTextsForm = () => {
     group.fields.forEach(field => {
       const label = document.createElement('label');
       label.textContent = field.label;
-      const input = document.createElement(field.rows ? 'textarea' : 'input');
-      if (field.rows) input.rows = field.rows;
-      else input.type = 'text';
+      const input = document.createElement(field.options ? 'select' : field.rows ? 'textarea' : 'input');
+      if (field.options) {
+        input.add(new Option('Automatique (premiers projets publiés)', ''));
+        field.options.forEach(project => input.add(new Option(project.title, project.slug)));
+      } else if (field.rows) {
+        input.rows = field.rows;
+      } else {
+        input.type = 'text';
+      }
       input.dataset.key = field.key;
       input.value = savedTexts[field.key] ?? '';
       label.append(input);
@@ -617,6 +623,9 @@ const showTexts = async () => {
     return showMessage(`Impossible de charger les textes : ${error.message}`, true);
   }
   savedTexts = Object.fromEntries(data.map(({ key, value }) => [key, value]));
+  const { data: published, error: projectsError } = await client.from('projects').select('slug,title').eq('published', true).order('position').order('created_at');
+  if (projectsError) return showMessage(`Impossible de charger les projets : ${projectsError.message}`, true);
+  publishedProjects = published;
   $('save-texts').hidden = false;
   renderTextsForm();
   isDirty = false;
@@ -666,18 +675,6 @@ const IMAGE_GROUPS = [
         "label": "Vignette 2",
         "src": "images/projects/project-4/01.jpg",
         "alt": "Living room with a green sofa and rattan armchair in window light"
-      },
-      {
-        "key": "image.home_panel1",
-        "label": "Grand panneau 1",
-        "src": "images/projects/project-1/03.jpg",
-        "alt": "Glass chandeliers glowing against a warm ceiling"
-      },
-      {
-        "key": "image.home_panel2",
-        "label": "Grand panneau 2",
-        "src": "images/projects/project-4/04.jpg",
-        "alt": "Dining area with a round table, cane chairs and a large textured artwork"
       }
     ]
   },
@@ -755,12 +752,6 @@ const IMAGE_GROUPS = [
         "label": "Fin de page : image du lien Projects",
         "src": "images/projects/project-1/01.jpg",
         "alt": "Restaurant dining room with an orange banquette, set tables and a dark green paneled wall"
-      },
-      {
-        "key": "image.studio_link2",
-        "label": "Fin de page : image du lien Campaigns",
-        "src": "images/projects/project-3/02.jpg",
-        "alt": "Bar with a blue tiled column, a marble counter and wooden shelves"
       },
       {
         "key": "image.studio_link3",

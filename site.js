@@ -120,7 +120,6 @@ document.querySelector('.site-footer').innerHTML = `
       <h3 class="wide">Support</h3>
       <ul>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="#">FAQ</a></li>
         <li><a href="mentions-legales.html">Mentions légales</a></li>
         <li><a href="politique-de-confidentialite.html">Politique de confidentialité</a></li>
         <li><a href="politique-cookies.html">Politique de cookies</a></li>
@@ -308,6 +307,24 @@ const renderProjects = () => {
   document.getElementById(location.hash.slice(1))?.scrollIntoView();
 };
 
+// Accueil : chaque grand panneau présente un projet, choisi dans l'admin ou, sinon, parmi les premiers publiés
+const renderHomePanels = () => {
+  const section = document.querySelector('.panels');
+  const chosen = ['home.panel1_project', 'home.panel2_project'].map(key => PROJECTS.find(project => project.slug === pageText(key)));
+  const others = PROJECTS.filter(project => !chosen.includes(project));
+  const projects = chosen.map(project => project ?? others.shift()).filter(Boolean);
+  section.innerHTML = projects.map(project => `
+    <a class="panel" href="${projectHref(project)}">
+      ${mediaHTML(project.images[0])}
+      <div class="panel__text">
+        <h2 class="wide">${escapeHTML(project.title)}</h2>
+        <p class="panel__sub">${escapeHTML(categoryLabel(project.category))}</p>
+        <span class="more">Discover More</span>
+      </div>
+    </a>`).join('');
+};
+
+if (document.body.dataset.page === 'home') renderHomePanels();
 if (document.body.dataset.page === 'projects') renderProjects();
 if (document.body.dataset.page === 'project') renderProject();
 if (document.body.dataset.page === 'world') renderWorld();
