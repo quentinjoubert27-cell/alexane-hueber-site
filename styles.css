@@ -42,9 +42,15 @@ ul { list-style: none; padding: 0; }
 .nav-icon { display: block; margin: -8px; padding: 8px; border: 0; background: none; color: inherit; cursor: pointer; }
 .nav-icon svg { display: block; }
 .nav-world { white-space: nowrap; }
-/* The AH Edit : capitales serif très espacées, pour se distinguer du reste du menu */
-.edit-mark { font-family: var(--serif); font-weight: 400; font-style: normal; text-transform: uppercase; letter-spacing: .2em; }
-.nav-world .edit-mark { font-size: 14px; }
+/* The AH Edit : « the AH » en italiques serif, posé sur « EDIT » en machine à écrire souligné d'un filet */
+.edit-mark { display: inline-grid; line-height: 1; vertical-align: middle; --edit-bot: .31em; }
+.edit-mark__top { margin-bottom: .09em; line-height: .86; white-space: nowrap; }
+.edit-mark__the { font-family: "Instrument Serif", var(--serif); font-style: italic; }
+.edit-mark__ah { margin-left: .14em; font-family: "Bodoni Moda", var(--serif); font-weight: 500; font-style: italic; }
+.edit-mark__bot { display: flex; align-items: center; gap: .7em; margin-right: -.32em; font: 400 var(--edit-bot)/1 "DM Mono", monospace; letter-spacing: .32em; text-transform: uppercase; }
+.edit-mark__bot::before { content: ""; flex: 1; height: 1px; background: currentColor; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.nav-world .edit-mark { font-size: 21px; }
 .nav-world-mobile { display: none; }
 .site-nav a:hover { opacity: .65; }
 .menu-btn { display: none; background: none; border: 0; padding: 8px 0; color: inherit; font: inherit; cursor: pointer; }
@@ -126,7 +132,7 @@ ul { list-style: none; padding: 0; }
 .footer-col h3 { margin-bottom: clamp(12px, 1.1vw, 20px); font-size: clamp(11px, .8vw, 14px); letter-spacing: .02em; }
 .footer-col li { margin-bottom: .45em; font-size: clamp(15px, 1.05vw, 19px); color: rgba(255,253,250,.75); }
 .footer-col a:hover { color: var(--cream); }
-.footer-col .edit-mark { font-size: .8em; }
+.footer-col .edit-mark { font-size: clamp(18px, 1.2vw, 21px); }
 .site-footer .wordmark { margin-top: clamp(48px, 11vw, 200px); padding-top: .04em; }
 .footer-legal { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 22px var(--gutter); font-size: 13px; color: rgba(255,253,250,.65); }
 .footer-legal ul { display: flex; gap: 20px; }
@@ -154,7 +160,7 @@ ul { list-style: none; padding: 0; }
   .nav-world-mobile { display: block; }
   .site-nav .nav-main > .nav-world-mobile > a { display: block; line-height: 68px; }
   .site-nav .nav-main a:hover { opacity: 1; }
-  .nav-world-mobile .edit-mark { font-size: 17px; }
+  .nav-world-mobile .edit-mark { font-size: 27px; }
 
   /* Projects se déroule dans le menu */
   .has-panel.is-expanded .mega { display: block; padding: 0 16px 24px; }
@@ -343,7 +349,7 @@ body:not([data-page="home"]) .site-header.is-hidden { transform: translateY(-100
 body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55px; }
 .ar-head { padding: 6vw var(--gutter) 5vw; text-align: center; }
 .ar-head h1 { font-weight: 400; font-size: clamp(30px, 6.4vw, 120px); line-height: 1; }
-.ar-head h1.edit-mark { font-size: clamp(26px, 4.6vw, 86px); letter-spacing: .14em; }
+.ar-head h1 .edit-mark { font-size: clamp(64px, 7.6vw, 136px); --edit-bot: .14em; }
 .ar-head p { margin-top: 1.4vw; font-size: clamp(17px, 1.24vw, 22px); }
 .ar-meta { color: var(--grey); font-size: clamp(14px, .92vw, 17px); }
 
@@ -374,7 +380,7 @@ body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55p
   body[data-page="world"] main, body[data-page="projects"] main { padding-top: 65px; }
   .ar-head { padding: 40px 16px 32px; }
   .ar-head h1 { font-size: 11vw; }
-  .ar-head h1.edit-mark { font-size: 8vw; }
+  .ar-head h1 .edit-mark { font-size: 17vw; --edit-bot: .18em; }
   .ar-head p { margin-top: 12px; }
   .ar-featured { display: block; }
   .ar-featured .pj-img { aspect-ratio: 4 / 5; }

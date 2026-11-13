@@ -1,4 +1,6 @@
 const { PROJECTS, CATEGORIES } = window;
+// Titre de la rubrique The AH Edit : « the AH » en italiques serif, posé sur « EDIT » souligné d'un filet
+const EDIT_MARK = '<span class="edit-mark"><span class="edit-mark__top"><span class="edit-mark__the">the</span><span class="edit-mark__ah">AH</span></span><span class="edit-mark__bot">Edit</span></span>';
 const MEGA_PROJECTS = 6;
 const SEARCH_SUGGESTIONS = 3;
 // Tant qu'un projet n'a pas ses vrais textes et sa fiche, sa page affiche ce texte provisoire
@@ -67,11 +69,11 @@ document.querySelector('.site-header').innerHTML = `
         <div class="mega" style="--mega-cols: ${megaColumns}">${megaHTML}<a class="more mega__all" href="projects.html">All projects</a></div>
       </li>
       <li><a href="studio.html">Studio</a></li>
-      <li class="nav-world-mobile"><a class="nav-world" href="ah-edit.html"><span class="edit-mark">The AH Edit</span></a></li>
+      <li class="nav-world-mobile"><a class="nav-world" href="ah-edit.html" aria-label="The AH Edit">${EDIT_MARK}</a></li>
     </ul>
     <a class="site-logo wide" href="${homeHref || '#'}" aria-label="Studio AH — home"><span>Studio</span> <span>AH</span></a>
     <ul class="nav-side">
-      <li class="nav-world-item"><a class="nav-world" href="ah-edit.html"><span class="edit-mark">The AH Edit</span></a></li>
+      <li class="nav-world-item"><a class="nav-world" href="ah-edit.html" aria-label="The AH Edit">${EDIT_MARK}</a></li>
       <li>
         <button class="nav-icon search-toggle" type="button" aria-label="Search" aria-expanded="false" aria-controls="search">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
@@ -116,7 +118,7 @@ document.querySelector('.site-footer').innerHTML = `
       <ul>
         <li><a href="studio.html">About</a></li>
         <li><a href="projects.html">Projects</a></li>
-        <li><a class="edit-mark" href="ah-edit.html">The AH Edit</a></li>
+        <li><a href="ah-edit.html" aria-label="The AH Edit">${EDIT_MARK}</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -214,7 +216,7 @@ const renderWorld = () => {
   const [featured, ...others] = sortedArticles();
   document.querySelector('main').innerHTML = `
     <section class="ar-head st-reveal">
-      <h1 class="edit-mark">The AH Edit</h1>
+      <h1>${EDIT_MARK}<span class="visually-hidden">The AH Edit</span></h1>
       <p>${escapeHTML(pageText('world.tagline', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'))}</p>
     </section>
     ${featured ? `
