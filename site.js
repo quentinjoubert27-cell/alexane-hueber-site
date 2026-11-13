@@ -103,7 +103,7 @@ document.querySelector('.site-header').innerHTML = `
 document.querySelector('.site-footer').innerHTML = `
   <div class="footer-top">
     <form class="newsletter">
-      <h2>A LITTLE MORE AH.</h2>
+      <h2>a little more <span class="nl-ah">AH.</span></h2>
       <p class="newsletter__sub">Design notes, creative discoveries &amp; studio news.</p>
       <div class="newsletter__field">
         <input type="email" name="email" autocomplete="email" placeholder="Email address*" aria-label="Email address" required>
