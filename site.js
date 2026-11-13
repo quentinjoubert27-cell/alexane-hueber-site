@@ -207,7 +207,7 @@ const articleCardHTML = article => `
         <div class="pj-cell"><div class="pj-img">${mediaHTML(article.images[0])}</div></div>
         <div class="ar-card__text st-reveal">
           ${articleMetaHTML(article)}
-          <h3 class="wide">${escapeHTML(article.title)}</h3>
+          <h3>${escapeHTML(article.title)}</h3>
           <p>${escapeHTML(article.excerpt)}</p>
         </div>
       </a>`;
@@ -224,7 +224,7 @@ const renderWorld = () => {
       <div class="pj-cell"><div class="pj-img">${mediaHTML(featured.images[0])}</div></div>
       <div class="ar-featured__text st-reveal">
         ${articleMetaHTML(featured)}
-        <h2 class="wide">${escapeHTML(featured.title)}</h2>
+        <h2>${escapeHTML(featured.title)}</h2>
         <p>${escapeHTML(featured.excerpt)}</p>
         <span class="more">Read more</span>
       </div>
@@ -239,7 +239,7 @@ const renderArticle = () => {
   const article = articles.find(item => item.slug === slug);
   if (!article) {
     document.title = 'Article not found — The AH Edit';
-    main.innerHTML = `<section class="pj-missing"><h1 class="wide">Article not found</h1><a class="more" href="ah-edit.html">Back to The AH Edit</a></section>`;
+    main.innerHTML = `<section class="pj-missing ar-missing"><h1>Article not found</h1><a class="more" href="ah-edit.html">Back to The AH Edit</a></section>`;
     return;
   }
   const [cover, ...images] = article.images;
@@ -250,12 +250,12 @@ const renderArticle = () => {
     <section class="pj-hero">${mediaHTML(cover)}</section>
     <section class="ar-title st-reveal">
       ${articleMetaHTML(article)}
-      <h1 class="wide">${escapeHTML(article.title)}</h1>
+      <h1>${escapeHTML(article.title)}</h1>
       ${intro ? `<p>${escapeHTML(intro)}</p>` : ''}
     </section>
     ${buildBlocks(images, texts).map(blockHTML).join('\n')}
     <section class="ar-more">
-      <h2 class="wide st-reveal">More from The AH Edit</h2>
+      <h2 class="st-reveal"><span>More from</span>${EDIT_MARK}<span class="visually-hidden">The AH Edit</span></h2>
       ${more.length ? `<div class="ar-grid">${more.map(articleCardHTML).join('')}</div>` : ''}
       <a class="more" href="ah-edit.html">All articles</a>
     </section>`;
