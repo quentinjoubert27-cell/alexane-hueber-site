@@ -1,4 +1,4 @@
--- Schéma du site Alexane Hueber : à exécuter une fois dans Supabase (SQL Editor).
+-- Schéma du site Studio AH : à exécuter une fois dans Supabase (SQL Editor).
 -- Lecture publique des projets publiés ; écriture réservée aux personnes listées dans public.admins.
 
 -- Personnes autorisées à utiliser l'admin

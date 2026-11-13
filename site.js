@@ -44,10 +44,10 @@ const megaHTML = CATEGORIES.map(category => {
           </div>`;
 }).join('');
 
-// La recherche couvre les projets (proposés en premier) et les articles de HUEBERvibe
+// La recherche couvre les projets (proposés en premier) et les articles de The AH Edit
 const searchEntries = [
   ...PROJECTS.map(project => ({ href: projectHref(project), image: project.images[0], title: project.title, label: categoryLabel(project.category) })),
-  ...sortedArticles().map(article => ({ href: articleHref(article), image: article.images[0], title: article.title, label: `HUEBERvibe · ${article.tag}` }))
+  ...sortedArticles().map(article => ({ href: articleHref(article), image: article.images[0], title: article.title, label: `The AH Edit · ${article.tag}` }))
 ];
 const searchItemsHTML = searchEntries.map(entry => `<a class="search__item" href="${entry.href}">
         <span class="search__img">${mediaHTML(entry.image)}</span>
@@ -67,11 +67,11 @@ document.querySelector('.site-header').innerHTML = `
         <div class="mega" style="--mega-cols: ${megaColumns}">${megaHTML}<a class="more mega__all" href="projects.html">All projects</a></div>
       </li>
       <li><a href="studio.html">Studio</a></li>
-      <li class="nav-world-mobile"><a class="nav-world" href="vibe.html"><span class="wide">Hueber</span><em>vibe</em></a></li>
+      <li class="nav-world-mobile"><a class="nav-world" href="ah-edit.html"><span class="edit-mark">The AH Edit</span></a></li>
     </ul>
-    <a class="site-logo wide" href="${homeHref || '#'}" aria-label="Alexane Hueber — home"><span>Alexane</span> <span>Hueber</span></a>
+    <a class="site-logo wide" href="${homeHref || '#'}" aria-label="Studio AH — home"><span>Studio</span> <span>AH</span></a>
     <ul class="nav-side">
-      <li class="nav-world-item"><a class="nav-world" href="vibe.html"><span class="wide">Hueber</span><em>vibe</em></a></li>
+      <li class="nav-world-item"><a class="nav-world" href="ah-edit.html"><span class="edit-mark">The AH Edit</span></a></li>
       <li>
         <button class="nav-icon search-toggle" type="button" aria-label="Search" aria-expanded="false" aria-controls="search">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
@@ -101,7 +101,8 @@ document.querySelector('.site-header').innerHTML = `
 document.querySelector('.site-footer').innerHTML = `
   <div class="footer-top">
     <form class="newsletter">
-      <h2>Sign up for our news<br>and invitations</h2>
+      <h2>A LITTLE MORE AH.</h2>
+      <p class="newsletter__sub">Design notes, creative discoveries &amp; studio news.</p>
       <div class="newsletter__field">
         <input type="email" name="email" autocomplete="email" placeholder="Email address*" aria-label="Email address" required>
         <button type="submit" aria-label="Subscribe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12h18M14 5l7 7-7 7"/></svg></button>
@@ -115,7 +116,7 @@ document.querySelector('.site-footer').innerHTML = `
       <ul>
         <li><a href="studio.html">About</a></li>
         <li><a href="projects.html">Projects</a></li>
-        <li><a href="vibe.html">HUEBERvibe</a></li>
+        <li><a class="edit-mark" href="ah-edit.html">The AH Edit</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -129,9 +130,9 @@ document.querySelector('.site-footer').innerHTML = `
       </ul>
     </div>
   </div>
-  <span class="wordmark wide" aria-hidden="true"><span class="wordmark__inner">Alexane Hueber</span></span>
+  <span class="wordmark wide" aria-hidden="true"><span class="wordmark__inner">Studio AH</span></span>
   <div class="footer-legal">
-    <span>Alexane Hueber © 2026 — All rights reserved</span>
+    <span>Studio AH © 2026 — All rights reserved</span>
     <ul>
       <li><a href="mentions-legales.html">Mentions légales</a></li>
       <li><a href="politique-de-confidentialite.html">Confidentialité</a></li>
@@ -175,13 +176,13 @@ const renderProject = () => {
   const slug = new URLSearchParams(location.search).get('p');
   const project = PROJECTS.find(item => item.slug === slug);
   if (!project) {
-    document.title = 'Project not found — Alexane Hueber';
+    document.title = 'Project not found — Studio AH';
     main.innerHTML = `<section class="pj-missing"><h1 class="wide">Project not found</h1><a class="more" href="index.html">Back to home</a></section>`;
     return;
   }
   const [cover, ...images] = project.images;
   const [intro, ...texts] = project.texts?.length ? project.texts : LOREM_PROJECT_TEXTS;
-  document.title = `${project.title} — Alexane Hueber`;
+  document.title = `${project.title} — Studio AH`;
   const facts = [['Location', project.location || 'Lorem ipsum'], ['Type', categoryLabel(project.category)], ['Year', project.year || 'Lorem'], ['Area', project.area || 'Lorem']];
   main.innerHTML = `
     <section class="pj-hero">${mediaHTML(cover)}</section>
@@ -196,7 +197,7 @@ const renderProject = () => {
     </section>
     ${buildBlocks(images, texts).map(blockHTML).join('\n')}`;
 };
-// HUEBERvibe : liste des articles et page de lecture
+// The AH Edit : liste des articles et page de lecture
 const formatDate = date => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
 const articleMetaHTML = article => `<p class="ar-meta"><time datetime="${escapeHTML(article.date)}">${formatDate(article.date)}</time> · ${escapeHTML(article.tag)}</p>`;
 const articleCardHTML = article => `
@@ -213,7 +214,7 @@ const renderWorld = () => {
   const [featured, ...others] = sortedArticles();
   document.querySelector('main').innerHTML = `
     <section class="ar-head st-reveal">
-      <h1><span class="wide">Hueber</span><em>vibe</em></h1>
+      <h1 class="edit-mark">The AH Edit</h1>
       <p>${escapeHTML(pageText('world.tagline', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'))}</p>
     </section>
     ${featured ? `
@@ -235,14 +236,14 @@ const renderArticle = () => {
   const slug = new URLSearchParams(location.search).get('a');
   const article = articles.find(item => item.slug === slug);
   if (!article) {
-    document.title = 'Article not found — HUEBERvibe';
-    main.innerHTML = `<section class="pj-missing"><h1 class="wide">Article not found</h1><a class="more" href="vibe.html">Back to HUEBERvibe</a></section>`;
+    document.title = 'Article not found — The AH Edit';
+    main.innerHTML = `<section class="pj-missing"><h1 class="wide">Article not found</h1><a class="more" href="ah-edit.html">Back to The AH Edit</a></section>`;
     return;
   }
   const [cover, ...images] = article.images;
   const [intro, ...texts] = article.texts;
   const more = articles.filter(item => item !== article).slice(0, 3);
-  document.title = `${article.title} — HUEBERvibe`;
+  document.title = `${article.title} — The AH Edit`;
   main.innerHTML = `
     <section class="pj-hero">${mediaHTML(cover)}</section>
     <section class="ar-title st-reveal">
@@ -252,9 +253,9 @@ const renderArticle = () => {
     </section>
     ${buildBlocks(images, texts).map(blockHTML).join('\n')}
     <section class="ar-more">
-      <h2 class="wide st-reveal">More from HUEBERvibe</h2>
+      <h2 class="wide st-reveal">More from The AH Edit</h2>
       ${more.length ? `<div class="ar-grid">${more.map(articleCardHTML).join('')}</div>` : ''}
-      <a class="more" href="vibe.html">All articles</a>
+      <a class="more" href="ah-edit.html">All articles</a>
     </section>`;
 };
 

@@ -20,7 +20,7 @@ const ARTICLE_PARAGRAPHS_MAX = 30;
 // Ce qui diffère entre un projet et un article ; le reste de l'admin est commun
 const KINDS = {
   project: { table: 'projects', listTitle: 'Projets', newLabel: 'Nouveau projet', editLabel: 'Modifier le projet', empty: "Aucun projet pour l'instant.", fallbackSlug: 'projet', storagePrefix: '', titleMax: TITLE_MAX, introLabel: 'Introduction', introMin: INTRO_MIN, introMax: INTRO_MAX, paragraphMin: PARAGRAPH_MIN, paragraphMax: PARAGRAPH_MAX, viewHref: slug => `project.html?p=${encodeURIComponent(slug)}` },
-  article: { table: 'articles', listTitle: 'Articles', newLabel: 'Nouvel article', editLabel: "Modifier l'article", empty: "Aucun article pour l'instant. Tant qu'il n'y en a aucun de publié, HUEBERvibe affiche les articles d'exemple.", fallbackSlug: 'article', storagePrefix: 'articles/', titleMax: 80, introLabel: 'Introduction *', introMin: 0, introMax: ARTICLE_INTRO_MAX, paragraphMin: 0, paragraphMax: ARTICLE_PARAGRAPH_MAX, viewHref: slug => `article.html?a=${encodeURIComponent(slug)}` }
+  article: { table: 'articles', listTitle: 'Articles', newLabel: 'Nouvel article', editLabel: "Modifier l'article", empty: "Aucun article pour l'instant. Tant qu'il n'y en a aucun de publié, The AH Edit affiche les articles d'exemple.", fallbackSlug: 'article', storagePrefix: 'articles/', titleMax: 80, introLabel: 'Introduction *', introMin: 0, introMax: ARTICLE_INTRO_MAX, paragraphMin: 0, paragraphMax: ARTICLE_PARAGRAPH_MAX, viewHref: slug => `article.html?a=${encodeURIComponent(slug)}` }
 };
 
 // Réglages des photos envoyées, les mêmes que pour les projets déjà sur le site
@@ -613,7 +613,7 @@ const textGroups = () => [
     { key: 'projects.intro', label: 'Introduction', rows: 5 },
     ...window.CATEGORIES.map(category => ({ key: `projects.category_${category.id}`, label: `Catégorie ${category.label}`, rows: 3 }))
   ] },
-  { title: 'HUEBERvibe', fields: [
+  { title: 'The AH Edit', fields: [
     { key: 'world.tagline', label: 'Phrase sous le titre', rows: 2 }
   ] }
 ];
@@ -900,7 +900,7 @@ const IMAGE_GROUPS = [
       },
       {
         "key": "image.studio_link3",
-        "label": "Fin de page : image du lien HUEBERvibe",
+        "label": "Fin de page : image du lien The AH Edit",
         "src": "images/projects/project-4/05.jpg",
         "alt": "View of the kitchen framed by a white linen curtain"
       },

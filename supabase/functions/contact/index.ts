@@ -7,7 +7,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'content-type, apikey, authorization, x-client-info'
 };
 const BREVO_API = 'https://api.brevo.com/v3';
-const SENDER_NAME = 'Alexane Hueber';
+const SENDER_NAME = 'Studio AH';
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const FIELD_MAX = 200;
 const MESSAGE_MAX = 5000;

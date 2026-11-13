@@ -1,4 +1,4 @@
-// Articles de HUEBERvibe : comme projects.js, ce fichier sera rempli par la future page admin.
+// Articles de The AH Edit : comme projects.js, ce fichier sera rempli par la future page admin.
 // Un article = une fiche, des images et des textes. La mise en page se fait toute seule (voir LAYOUT dans site.js).
 //
 // {

@@ -19,7 +19,7 @@ ul { list-style: none; padding: 0; }
 
 /* Titres en capitales larges */
 .wide { font: 800 1em/1.05 var(--wide); font-stretch: 125%; text-transform: uppercase; letter-spacing: -.01em; }
-.wordmark { display: block; font-size: 8vw; line-height: .8; text-align: center; white-space: nowrap; }
+.wordmark { display: block; font-size: 13.6vw; line-height: .8; text-align: center; white-space: nowrap; }
 
 /* Lien italique souligné */
 .more { display: inline-block; margin-top: 16px; padding-bottom: 5px; border-bottom: 1px solid; font-style: italic; font-size: 15px; }
@@ -42,8 +42,9 @@ ul { list-style: none; padding: 0; }
 .nav-icon { display: block; margin: -8px; padding: 8px; border: 0; background: none; color: inherit; cursor: pointer; }
 .nav-icon svg { display: block; }
 .nav-world { white-space: nowrap; }
-.nav-world .wide { font-size: 13px; }
-.nav-world em { font-size: 1.1em; opacity: .8; }
+/* The AH Edit : capitales serif très espacées, pour se distinguer du reste du menu */
+.edit-mark { font-family: var(--serif); font-weight: 400; font-style: normal; text-transform: uppercase; letter-spacing: .2em; }
+.nav-world .edit-mark { font-size: 14px; }
 .nav-world-mobile { display: none; }
 .site-nav a:hover { opacity: .65; }
 .menu-btn { display: none; background: none; border: 0; padding: 8px 0; color: inherit; font: inherit; cursor: pointer; }
@@ -111,7 +112,8 @@ ul { list-style: none; padding: 0; }
 /* Pied de page */
 .site-footer { overflow: hidden; background: var(--ink); color: var(--cream); padding-top: clamp(48px, 5vw, 96px); }
 .footer-top { display: grid; grid-template-columns: 1fr 20vw 20vw; padding-left: clamp(16px, 4.2vw, 84px); }
-.newsletter h2 { font: 400 clamp(20px, 1.65vw, 30px)/1.35 var(--serif); }
+.newsletter h2 { font: 400 clamp(20px, 1.65vw, 30px)/1.35 var(--serif); letter-spacing: .04em; }
+.newsletter__sub { margin-top: 6px; font-size: clamp(15px, 1.05vw, 19px); color: rgba(255,253,250,.75); }
 .newsletter__field { display: flex; align-items: center; width: 33vw; margin-top: clamp(20px, 1.8vw, 32px); border-bottom: 1px solid rgba(255,253,250,.7); }
 .newsletter input[type=email] { flex: 1; min-width: 0; padding: 10px clamp(8px, 1.15vw, 20px); border: 0; background: none; color: inherit; font: 400 clamp(15px, 1.05vw, 19px) var(--serif); }
 .newsletter input[type=email]::placeholder { color: rgba(255,253,250,.75); }
@@ -124,19 +126,19 @@ ul { list-style: none; padding: 0; }
 .footer-col h3 { margin-bottom: clamp(12px, 1.1vw, 20px); font-size: clamp(11px, .8vw, 14px); letter-spacing: .02em; }
 .footer-col li { margin-bottom: .45em; font-size: clamp(15px, 1.05vw, 19px); color: rgba(255,253,250,.75); }
 .footer-col a:hover { color: var(--cream); }
+.footer-col .edit-mark { font-size: .8em; }
 .site-footer .wordmark { margin-top: clamp(48px, 11vw, 200px); padding-top: .04em; }
 .footer-legal { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 22px var(--gutter); font-size: 13px; color: rgba(255,253,250,.65); }
 .footer-legal ul { display: flex; gap: 20px; }
 
 @media (max-width: 900px) {
-  /* Barre mobile : burger, nom sur deux lignes, icônes */
+  /* Barre mobile : burger, nom, icônes */
   .site-nav { min-height: 65px; padding-block: 0; }
   .menu-btn { display: block; justify-self: start; margin: -8px; padding: 8px; }
   .menu-btn svg { display: block; }
   .menu-btn[aria-expanded="false"] .icon-close, .menu-btn[aria-expanded="true"] .icon-open { display: none; }
   .site-logo { line-height: 1; text-align: center; }
-  .site-logo span { display: block; font-size: 23px; }
-  .site-logo span + span { font-size: 26px; }
+  .site-logo { font-size: 22px; }
   .site-nav .nav-side { gap: 20px; }
   .nav-world-item { display: none; }
 
@@ -152,7 +154,7 @@ ul { list-style: none; padding: 0; }
   .nav-world-mobile { display: block; }
   .site-nav .nav-main > .nav-world-mobile > a { display: block; line-height: 68px; }
   .site-nav .nav-main a:hover { opacity: 1; }
-  .nav-world-mobile .wide { font-size: 16px; }
+  .nav-world-mobile .edit-mark { font-size: 17px; }
 
   /* Projects se déroule dans le menu */
   .has-panel.is-expanded .mega { display: block; padding: 0 16px 24px; }
@@ -337,11 +339,11 @@ body:not([data-page="home"]) .site-header.is-hidden { transform: translateY(-100
   .ct-field { margin-bottom: 10px; }
 }
 
-/* HUEBERvibe */
+/* The AH Edit */
 body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55px; }
 .ar-head { padding: 6vw var(--gutter) 5vw; text-align: center; }
 .ar-head h1 { font-weight: 400; font-size: clamp(30px, 6.4vw, 120px); line-height: 1; }
-.ar-head h1 em { font-size: 1.15em; }
+.ar-head h1.edit-mark { font-size: clamp(26px, 4.6vw, 86px); letter-spacing: .14em; }
 .ar-head p { margin-top: 1.4vw; font-size: clamp(17px, 1.24vw, 22px); }
 .ar-meta { color: var(--grey); font-size: clamp(14px, .92vw, 17px); }
 
@@ -372,6 +374,7 @@ body[data-page="world"] main, body[data-page="projects"] main { padding-top: 55p
   body[data-page="world"] main, body[data-page="projects"] main { padding-top: 65px; }
   .ar-head { padding: 40px 16px 32px; }
   .ar-head h1 { font-size: 11vw; }
+  .ar-head h1.edit-mark { font-size: 8vw; }
   .ar-head p { margin-top: 12px; }
   .ar-featured { display: block; }
   .ar-featured .pj-img { aspect-ratio: 4 / 5; }
