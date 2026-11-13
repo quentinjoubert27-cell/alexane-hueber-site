@@ -28,7 +28,7 @@ const PHOTO_MAX_SIDE = 2600;
 const PHOTO_QUALITY = .8;
 
 const $ = id => document.getElementById(id);
-const views = ['view-login', 'view-denied', 'view-list', 'view-texts', 'view-images', 'view-categories', 'view-editor'];
+const views = ['view-login', 'view-denied', 'view-list', 'view-texts', 'view-images', 'view-categories', 'view-newsletter', 'view-editor'];
 
 let kind = 'project';
 const config = () => KINDS[kind];
@@ -41,7 +41,7 @@ let isBusy = false;
 
 const showView = id => {
   views.forEach(view => { $(view).hidden = view !== id; });
-  $('tabs').hidden = !['view-list', 'view-texts', 'view-images', 'view-categories'].includes(id);
+  $('tabs').hidden = !['view-list', 'view-texts', 'view-images', 'view-categories', 'view-newsletter'].includes(id);
   window.scrollTo(0, 0);
 };
 
@@ -130,6 +130,7 @@ document.querySelectorAll('.ad-tab').forEach(tab => tab.addEventListener('click'
   if (tab.dataset.tab in TEXT_TABS) return showTexts(tab.dataset.tab);
   if (tab.dataset.tab === 'categories') return showCategories();
   if (tab.dataset.tab === 'images') return showImages();
+  if (tab.dataset.tab === 'newsletter') return showNewsletter();
   kind = tab.dataset.tab;
   await showList();
 }));
@@ -314,9 +315,9 @@ $('project-form').addEventListener('input', () => {
 $('project-form').addEventListener('submit', event => event.preventDefault());
 
 // Photos : réduites et ré-encodées dans le navigateur, ce qui retire aussi leurs métadonnées
-const preparePhoto = async file => {
+const preparePhoto = async (file, maxSide = PHOTO_MAX_SIDE) => {
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const scale = Math.min(1, PHOTO_MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(bitmap.width * scale);
   canvas.height = Math.round(bitmap.height * scale);
@@ -1091,6 +1092,305 @@ $('save-images').addEventListener('click', async () => {
     showMessage(`L'enregistrement a échoué, rien n'a été modifié : ${error.message}`, true);
   } finally {
     setBusy(false);
+  }
+});
+
+// Newsletter : écrite ici, envoyée par Brevo aux inscrits du site via la fonction Supabase « newsletter »
+const NL_IMAGE_SIDE = 1200;
+const NL_PICKS_MAX = 4;
+const NL_DRAFT_KEY = 'studio-ah-newsletter-draft';
+let nlImage = null;   // { src, alt }, déjà envoyée dans le stockage
+let nlArticles = [];
+let nlProjects = [];
+let nlSubscribers = null;
+let nlPreviewTimer = 0;
+
+const callNewsletter = async body => {
+  const { data: { session } } = await client.auth.getSession();
+  let response;
+  try {
+    response = await fetch(`${window.SUPABASE_URL}/functions/v1/newsletter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: window.SUPABASE_KEY, Authorization: `Bearer ${session?.access_token ?? ''}` },
+      body: JSON.stringify(body)
+    });
+  } catch {
+    throw new Error("la fonction « newsletter » ne répond pas. Vérifie qu'elle est bien déployée dans Supabase.");
+  }
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || result.message || `erreur ${response.status}`);
+  return result;
+};
+
+const englishDate = date => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
+
+const pickedItems = (list, listId) => [...$(listId).querySelectorAll('input:checked')]
+  .map(input => list.find(item => item.id === input.value))
+  .filter(Boolean);
+
+const nlContent = () => ({
+  subject: $('nl-subject').value.trim(),
+  title: $('nl-title').value.trim(),
+  text: $('nl-text').value.trim(),
+  image: nlImage,
+  articles: pickedItems(nlArticles, 'nl-articles').map(article => ({
+    title: article.title,
+    meta: [article.tag, englishDate(article.date)].filter(Boolean).join(' · '),
+    text: article.excerpt,
+    image: article.images?.[0]?.src,
+    alt: article.images?.[0]?.alt,
+    url: `${window.NEWSLETTER_SITE_URL}/article.html?a=${encodeURIComponent(article.slug)}`,
+    more: 'Read the article'
+  })),
+  projects: pickedItems(nlProjects, 'nl-projects').map(project => ({
+    title: project.title,
+    meta: [categoryLabel(project.category), project.location].filter(Boolean).join(' · '),
+    image: project.images?.[0]?.src,
+    alt: project.images?.[0]?.alt,
+    url: `${window.NEWSLETTER_SITE_URL}/project.html?p=${encodeURIComponent(project.slug)}`,
+    more: 'Discover the project'
+  }))
+});
+
+const saveNlDraft = () => {
+  try {
+    localStorage.setItem(NL_DRAFT_KEY, JSON.stringify({
+      subject: $('nl-subject').value,
+      title: $('nl-title').value,
+      text: $('nl-text').value,
+      image: nlImage,
+      articles: [...$('nl-articles').querySelectorAll('input:checked')].map(input => input.value),
+      projects: [...$('nl-projects').querySelectorAll('input:checked')].map(input => input.value)
+    }));
+  } catch { /* brouillon non conservé, sans conséquence */ }
+};
+
+const readNlDraft = () => {
+  try { return JSON.parse(localStorage.getItem(NL_DRAFT_KEY)) ?? {}; } catch { return {}; }
+};
+
+const updateNlPreview = () => {
+  clearTimeout(nlPreviewTimer);
+  nlPreviewTimer = setTimeout(() => { $('nl-preview').srcdoc = window.buildNewsletterEmail(nlContent()); }, 250);
+};
+
+const nlChanged = () => {
+  saveNlDraft();
+  updateNlPreview();
+};
+
+$('nl-preview').addEventListener('load', () => {
+  const frame = $('nl-preview');
+  const height = frame.contentDocument?.documentElement.scrollHeight;
+  if (height) frame.style.height = `${height}px`;
+});
+$('nl-form').addEventListener('input', nlChanged);
+
+// Au plus quatre articles et quatre projets, pour garder un e-mail court
+const limitPicks = list => {
+  const boxes = [...list.querySelectorAll('input')];
+  const full = boxes.filter(box => box.checked).length >= NL_PICKS_MAX;
+  boxes.forEach(box => { box.disabled = full && !box.checked; });
+};
+
+const renderPicks = (listId, items, checked, meta, empty) => {
+  const list = $(listId);
+  if (!items.length) {
+    const item = document.createElement('li');
+    item.className = 'ad-empty';
+    item.textContent = empty;
+    return list.replaceChildren(item);
+  }
+  list.replaceChildren(...items.map(entry => {
+    const item = document.createElement('li');
+    const label = document.createElement('label');
+    label.className = 'ad-pick';
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.value = entry.id;
+    box.checked = checked.includes(entry.id);
+    const cover = entry.images?.[0]?.src;
+    const thumb = document.createElement(cover && !/\.(mp4|webm|mov)$/i.test(cover) ? 'img' : 'span');
+    thumb.className = 'ad-pick__thumb';
+    if (thumb.tagName === 'IMG') { thumb.src = cover; thumb.alt = ''; }
+    const text = document.createElement('span');
+    const title = document.createElement('strong');
+    title.textContent = entry.title;
+    const small = document.createElement('small');
+    small.textContent = meta(entry);
+    text.append(title, small);
+    label.append(box, thumb, text);
+    item.append(label);
+    return item;
+  }));
+  limitPicks(list);
+};
+['nl-articles', 'nl-projects'].forEach(id => $(id).addEventListener('change', () => limitPicks($(id))));
+
+const renderNlImage = () => {
+  const box = $('nl-image');
+  if (!nlImage) {
+    const drop = document.createElement('label');
+    drop.className = 'ad-drop';
+    drop.innerHTML = '<span>Choisir une image (facultatif)</span><input type="file" accept="image/jpeg,image/png,image/webp">';
+    drop.querySelector('input').addEventListener('change', event => addNlImage(event.target.files[0]));
+    return box.replaceChildren(drop);
+  }
+  const preview = document.createElement('img');
+  preview.src = nlImage.src;
+  preview.alt = '';
+  const alt = document.createElement('label');
+  alt.textContent = "Description de l'image";
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = nlImage.alt ?? '';
+  input.addEventListener('input', () => { nlImage.alt = input.value; });
+  alt.append(input);
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'ad-link ad-link--danger';
+  remove.textContent = "Retirer l'image";
+  remove.addEventListener('click', async () => {
+    const src = nlImage.src;
+    nlImage = null;
+    renderNlImage();
+    nlChanged();
+    await removeFiles([src]);
+  });
+  box.replaceChildren(preview, alt, remove);
+};
+
+const addNlImage = async file => {
+  if (!file || isBusy) return;
+  setBusy(true);
+  try {
+    showMessage("Envoi de l'image…");
+    const { blob } = await preparePhoto(file, NL_IMAGE_SIDE);
+    const path = `newsletter/${crypto.randomUUID()}.jpg`;
+    const { error } = await client.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg', cacheControl: '31536000' });
+    if (error) throw error;
+    nlImage = { src: client.storage.from(BUCKET).getPublicUrl(path).data.publicUrl, alt: '' };
+    showMessage('');
+    renderNlImage();
+    nlChanged();
+  } catch (error) {
+    showMessage(`L'image n'a pas pu être ajoutée : ${error.message}`, true);
+    renderNlImage();
+  } finally {
+    setBusy(false);
+  }
+};
+
+const renderNlHistory = history => {
+  $('nl-history').replaceChildren(...(history.length ? history : [null]).map(entry => {
+    const item = document.createElement('li');
+    const text = document.createElement('div');
+    text.className = 'ad-list__text';
+    if (!entry) {
+      text.className = 'ad-empty';
+      text.textContent = 'Aucune newsletter envoyée pour le moment.';
+    } else {
+      const title = document.createElement('div');
+      title.textContent = entry.subject;
+      const meta = document.createElement('div');
+      meta.className = 'ad-list__meta';
+      meta.textContent = [entry.sentDate && formatDate(entry.sentDate), entry.sent != null && `envoyée à ${entry.sent} personne${entry.sent > 1 ? 's' : ''}`].filter(Boolean).join(' · ');
+      text.append(title, meta);
+    }
+    item.append(text);
+    return item;
+  }));
+};
+
+const loadNlStatus = async () => {
+  try {
+    const { subscribers, history } = await callNewsletter({ action: 'status' });
+    nlSubscribers = subscribers;
+    $('nl-subscribers').textContent = `${subscribers} abonné${subscribers > 1 ? 's' : ''}`;
+    renderNlHistory(history);
+  } catch (error) {
+    nlSubscribers = null;
+    $('nl-subscribers').textContent = 'Abonnés indisponibles';
+    $('nl-history').replaceChildren();
+    showMessage(`Impossible de joindre Brevo : ${error.message}`, true);
+  }
+};
+
+const showNewsletter = async () => {
+  setActiveTab('newsletter');
+  showView('view-newsletter');
+  $('nl-errors').hidden = true;
+  const draft = readNlDraft();
+  $('nl-subject').value = draft.subject ?? '';
+  $('nl-title').value = draft.title ?? '';
+  $('nl-text').value = draft.text ?? '';
+  nlImage = draft.image?.src ? draft.image : null;
+  renderNlImage();
+  const [articles, projectRows] = await Promise.all([
+    client.from('articles').select('id,slug,title,date,tag,excerpt,images').eq('published', true).order('date', { ascending: false }),
+    client.from('projects').select('id,slug,title,category,location,images').eq('published', true).order('position').order('created_at')
+  ]);
+  if (articles.error || projectRows.error) showMessage(`Impossible de charger les articles et projets : ${(articles.error || projectRows.error).message}`, true);
+  nlArticles = articles.data ?? [];
+  nlProjects = projectRows.data ?? [];
+  renderPicks('nl-articles', nlArticles, draft.articles ?? [], article => [article.tag, formatDate(article.date)].filter(Boolean).join(' · '), 'Aucun article publié.');
+  renderPicks('nl-projects', nlProjects, draft.projects ?? [], project => [categoryLabel(project.category), project.location].filter(Boolean).join(' · '), 'Aucun projet publié.');
+  updateNlPreview();
+  await loadNlStatus();
+};
+
+const nlReady = () => {
+  const content = nlContent();
+  const errors = [];
+  if (!content.subject) errors.push("Ajoute un objet à l'e-mail.");
+  if (!content.title && !content.text && !content.image && !content.articles.length && !content.projects.length) errors.push('Ajoute un texte, une image, un article ou un projet.');
+  const list = $('nl-errors');
+  list.replaceChildren(...errors.map(text => {
+    const item = document.createElement('li');
+    item.textContent = text;
+    return item;
+  }));
+  list.hidden = !errors.length;
+  if (errors.length) {
+    list.scrollIntoView({ block: 'center' });
+    return null;
+  }
+  return { subject: content.subject, html: window.buildNewsletterEmail(content) };
+};
+
+$('nl-test').addEventListener('click', async () => {
+  const email = nlReady();
+  if (!email || isBusy) return;
+  setBusy(true);
+  showMessage("Envoi de l'e-mail de test…");
+  try {
+    const { to } = await callNewsletter({ action: 'test', ...email });
+    showMessage(`Un e-mail de test est parti vers ${to}. Le lien de désinscription n'est actif que dans la vraie newsletter.`);
+  } catch (error) {
+    showMessage(`Le test n'a pas pu partir : ${error.message}`, true);
+  } finally {
+    setBusy(false);
+    window.scrollTo(0, 0);
+  }
+});
+
+$('nl-send').addEventListener('click', async () => {
+  const email = nlReady();
+  if (!email || isBusy) return;
+  const audience = nlSubscribers == null ? 'tous les abonnés' : `${nlSubscribers} abonné${nlSubscribers > 1 ? 's' : ''}`;
+  if (!confirm(`Envoyer « ${email.subject} » à ${audience} ?\n\nUne fois partie, la newsletter ne peut plus être annulée.`)) return;
+  setBusy(true);
+  showMessage('Envoi de la newsletter…');
+  try {
+    await callNewsletter({ action: 'send', ...email });
+    try { localStorage.removeItem(NL_DRAFT_KEY); } catch { /* rien à effacer */ }
+    await showNewsletter();
+    showMessage(`La newsletter est partie vers ${audience}. Brevo peut mettre quelques minutes à tout envoyer.`);
+  } catch (error) {
+    showMessage(`La newsletter n'est pas partie : ${error.message}`, true);
+  } finally {
+    setBusy(false);
+    window.scrollTo(0, 0);
   }
 });
 

@@ -27,6 +27,7 @@
     <button class="ad-tab" type="button" data-tab="images">Images</button>
     <button class="ad-tab" type="button" data-tab="categories">Catégories</button>
     <button class="ad-tab" type="button" data-tab="legal">Légal</button>
+    <button class="ad-tab" type="button" data-tab="newsletter">Newsletter</button>
   </nav>
 
   <section id="view-login" hidden>
@@ -92,6 +93,55 @@
     </div>
   </section>
 
+  <section id="view-newsletter" hidden>
+    <div class="ad-head">
+      <h1>Newsletter</h1>
+      <p class="ad-help" id="nl-subscribers">Chargement des abonnés…</p>
+    </div>
+    <p class="ad-help">Les personnes qui s'inscrivent sur le site reçoivent la newsletter. Écris-la ici, envoie-toi un test, puis envoie-la à tous les abonnés. Un lien de désinscription est ajouté automatiquement en bas.</p>
+
+    <form class="ad-form ad-texts" id="nl-form" novalidate>
+      <fieldset>
+        <legend>Contenu</legend>
+        <label>Objet de l'e-mail *<input type="text" id="nl-subject" maxlength="150" placeholder="A little more AH — novembre"></label>
+        <label>Titre<input type="text" id="nl-title" maxlength="120"></label>
+        <label>Texte<textarea id="nl-text" rows="8"></textarea><small class="ad-help">Laisse une ligne vide entre deux paragraphes.</small></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Image en haut</legend>
+        <div class="ad-nl-image" id="nl-image"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Articles à mettre en avant</legend>
+        <ul class="ad-picks" id="nl-articles"></ul>
+      </fieldset>
+
+      <fieldset>
+        <legend>Projets à mettre en avant</legend>
+        <ul class="ad-picks" id="nl-projects"></ul>
+      </fieldset>
+
+      <fieldset>
+        <legend>Aperçu</legend>
+        <iframe class="ad-nl-preview" id="nl-preview" title="Aperçu de la newsletter"></iframe>
+      </fieldset>
+
+      <ul class="ad-errors" id="nl-errors" role="alert" hidden></ul>
+
+      <div class="ad-actions">
+        <button class="ad-button ad-button--light" id="nl-test" type="button">M'envoyer un test</button>
+        <button class="ad-button" id="nl-send" type="button">Envoyer à tous les abonnés</button>
+      </div>
+    </form>
+
+    <div class="ad-group">
+      <h2>Déjà envoyées</h2>
+      <ul class="ad-list" id="nl-history"></ul>
+    </div>
+  </section>
+
   <section id="view-editor" hidden>
     <div class="ad-head">
       <h1 id="editor-title">Nouveau projet</h1>
@@ -153,6 +203,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="supabase-config.js"></script>
 <script src="projects.js"></script>
+<script src="newsletter-email.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

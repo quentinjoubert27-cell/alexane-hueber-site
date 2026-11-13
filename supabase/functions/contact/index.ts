@@ -1,6 +1,7 @@
 // Reçoit les formulaires du site (contact et newsletter) et envoie la demande par mail au studio, avec Brevo.
 // À configurer dans Supabase (Edge Functions > Secrets), jamais dans le code :
-// BREVO_API_KEY, MAIL_TO (adresse qui reçoit les demandes), MAIL_FROM (expéditeur validé dans Brevo).
+// BREVO_API_KEY, MAIL_TO (adresse qui reçoit les demandes), MAIL_FROM (expéditeur validé dans Brevo),
+// BREVO_LIST_ID (numéro de la liste Brevo des abonnés à la newsletter).
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -87,7 +88,8 @@ Deno.serve(async request => {
   }
 
   if (form.subscribes) {
-    const added = await brevo('/contacts', { email: form.email, updateEnabled: true });
+    const listId = Number(Deno.env.get('BREVO_LIST_ID'));
+    const added = await brevo('/contacts', { email: form.email, updateEnabled: true, ...(listId ? { listIds: [listId] } : {}) });
     if (!added.ok) console.error('Contact Brevo refusé', added.status, await added.text());
   }
   return reply(200, { ok: true });
