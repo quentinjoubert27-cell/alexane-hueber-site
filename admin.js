@@ -1181,8 +1181,11 @@ const nlChanged = () => {
 
 $('nl-preview').addEventListener('load', () => {
   const frame = $('nl-preview');
-  const height = frame.contentDocument?.documentElement.scrollHeight;
-  if (height) frame.style.height = `${height}px`;
+  const page = frame.contentDocument?.documentElement;
+  if (!page) return;
+  // Le cadre est d'abord écrasé : sinon il ne raccourcit jamais quand le contenu diminue
+  frame.style.height = '0';
+  frame.style.height = `${page.scrollHeight}px`;
 });
 $('nl-form').addEventListener('input', nlChanged);
 

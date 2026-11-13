@@ -2,6 +2,8 @@
 // Les messageries ignorent souvent le CSS moderne : tableaux et styles en ligne, polices de secours classiques.
 (() => {
   const SITE_URL = /^(localhost|127\.|\[::1\])/.test(location.hostname) ? 'https://alexane-hueber-site.vercel.app' : location.origin;
+  // Adresse affichée en bas de chaque newsletter pour les questions
+  const CONTACT_EMAIL = 'ahueber.studioah@gmail.com';
   const INK = '#0f0f0f';
   const GREY = '#6b6864';
   const CREAM = '#fffdfa';
@@ -48,7 +50,8 @@
       row(`
         <p style="margin:0;padding-top:28px;border-top:1px solid ${INK};font:italic 400 30px/1.1 ${SERIF};color:${INK};">a little more <span style="font-family:'Bodoni Moda', Didot, 'Bodoni 72', Georgia, serif;font-weight:500;">AH.</span></p>
         <p style="margin:10px 0 0;font:400 15px/1.5 ${BODY};color:${GREY};">Design notes, creative discoveries &amp; studio news.</p>
-        <p style="margin:24px 0 0;font:400 11px/1.8 ${MONO};letter-spacing:.1em;text-transform:uppercase;color:${GREY};">
+        <p style="margin:24px 0 0;font:400 14px/1.5 ${BODY};color:${GREY};">Please do not reply to this email. For any questions, write to <a href="mailto:${CONTACT_EMAIL}" style="color:${INK};">${CONTACT_EMAIL}</a>.</p>
+        <p style="margin:16px 0 0;font:400 11px/1.8 ${MONO};letter-spacing:.1em;text-transform:uppercase;color:${GREY};">
           <a href="${SITE_URL}/" style="color:${INK};">Website</a> &nbsp;·&nbsp; <a href="${SITE_URL}/contact.html" style="color:${INK};">Contact</a> &nbsp;·&nbsp; <a href="{{ unsubscribe }}" style="color:${GREY};">Unsubscribe</a>
         </p>
       `, '24px 20px 48px')
